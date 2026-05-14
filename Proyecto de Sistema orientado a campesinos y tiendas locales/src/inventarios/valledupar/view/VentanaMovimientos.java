@@ -8,6 +8,6 @@ package inventarios.valledupar.view;
  *
  * @author Bayron
  */
-public class VentanaLogin {
+public class VentanaMovimientos {
     
 }
