@@ -1,13 +1,14 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package inventarios.valledupar.dao;
 
-/**
- *
- * @author Bayron
- */
-public class IUsuarioDAO {
-    
+import inventarios.valledupar.model.Usuario;
+import java.util.List;
+
+public interface IUsuarioDAO {
+
+    void guardar(Usuario usuario);
+    Usuario buscarPorId(int idUsuario);
+    List<Usuario> buscarTodos();
+    void actualizar(Usuario usuario);
+    void eliminar(int idUsuario);
+    Usuario autenticar(String correo, String contrasena);
 }
