@@ -1,13 +1,13 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package inventarios.valledupar.dao;
 
-/**
- *
- * @author Bayron
- */
-public class IMovimientoDAO {
-    
+import inventarios.valledupar.model.Movimiento;
+import java.util.List;
+
+public interface IMovimientoDAO {
+
+    void guardar(Movimiento movimiento);
+    Movimiento buscarPorId(int idMovimiento);
+    List<Movimiento> buscarTodos();
+    List<Movimiento> buscarPorProducto(int idProducto);
+    List<Movimiento> buscarPorPeriodo(String fechaInicio, String fechaFin);
 }
