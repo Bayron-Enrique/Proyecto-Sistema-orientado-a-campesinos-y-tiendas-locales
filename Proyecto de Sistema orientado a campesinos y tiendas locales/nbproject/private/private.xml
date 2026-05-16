@@ -3,12 +3,14 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Bayron/OneDrive/Documents/NetBeansProjects/Proyecto-Sistema-orientado-a-campesinos-y-tiendas-locales/Proyecto%20de%20Sistema%20orientado%20a%20campesinos%20y%20tiendas%20locales/src/inventarios/valledupar/model/Persona.java</file>
-            <file>file:/C:/Users/Bayron/OneDrive/Documents/NetBeansProjects/Proyecto-Sistema-orientado-a-campesinos-y-tiendas-locales/Proyecto%20de%20Sistema%20orientado%20a%20campesinos%20y%20tiendas%20locales/src/inventarios/valledupar/dao/IUsuarioDAO.java</file>
-            <file>file:/C:/Users/Bayron/OneDrive/Documents/NetBeansProjects/Proyecto-Sistema-orientado-a-campesinos-y-tiendas-locales/Proyecto%20de%20Sistema%20orientado%20a%20campesinos%20y%20tiendas%20locales/src/inventarios/valledupar/service/UsuarioService.java</file>
-            <file>file:/C:/Users/Bayron/OneDrive/Documents/NetBeansProjects/Proyecto-Sistema-orientado-a-campesinos-y-tiendas-locales/Proyecto%20de%20Sistema%20orientado%20a%20campesinos%20y%20tiendas%20locales/src/inventarios/valledupar/view/VentanaLogin.java</file>
-            <file>file:/C:/Users/Bayron/OneDrive/Documents/NetBeansProjects/Proyecto-Sistema-orientado-a-campesinos-y-tiendas-locales/Proyecto%20de%20Sistema%20orientado%20a%20campesinos%20y%20tiendas%20locales/src/inventarios/valledupar/model/Usuario.java</file>
-            <file>file:/C:/Users/Bayron/OneDrive/Documents/NetBeansProjects/Proyecto-Sistema-orientado-a-campesinos-y-tiendas-locales/Proyecto%20de%20Sistema%20orientado%20a%20campesinos%20y%20tiendas%20locales/src/inventarios/valledupar/model/Categoria.java</file>
+            <file>file:/C:/Users/Bayron/OneDrive/Documents/NetBeansProjects/Proyecto-Sistema-orientado-a-campesinos-y-tiendas-locales/Proyecto%20de%20Sistema%20orientado%20a%20campesinos%20y%20tiendas%20locales/src/inventarios/valledupar/dao/ICategoriaDAO.java</file>
+            <file>file:/C:/Users/Bayron/OneDrive/Documents/NetBeansProjects/Proyecto-Sistema-orientado-a-campesinos-y-tiendas-locales/Proyecto%20de%20Sistema%20orientado%20a%20campesinos%20y%20tiendas%20locales/src/inventarios/valledupar/dao/IProductoDAO.java</file>
+            <file>file:/C:/Users/Bayron/OneDrive/Documents/NetBeansProjects/Proyecto-Sistema-orientado-a-campesinos-y-tiendas-locales/Proyecto%20de%20Sistema%20orientado%20a%20campesinos%20y%20tiendas%20locales/src/inventarios/valledupar/dao/IProveedorDAO.java</file>
+            <file>file:/C:/Users/Bayron/OneDrive/Documents/NetBeansProjects/Proyecto-Sistema-orientado-a-campesinos-y-tiendas-locales/Proyecto%20de%20Sistema%20orientado%20a%20campesinos%20y%20tiendas%20locales/src/inventarios/valledupar/dao/IMovimientoDAO.java</file>
+            <file>file:/C:/Users/Bayron/OneDrive/Documents/NetBeansProjects/Proyecto-Sistema-orientado-a-campesinos-y-tiendas-locales/Proyecto%20de%20Sistema%20orientado%20a%20campesinos%20y%20tiendas%20locales/src/inventarios/valledupar/dao/IAlertaDAO.java</file>
+            <file>file:/C:/Users/Bayron/OneDrive/Documents/NetBeansProjects/Proyecto-Sistema-orientado-a-campesinos-y-tiendas-locales/Proyecto%20de%20Sistema%20orientado%20a%20campesinos%20y%20tiendas%20locales/src/inventarios/valledupar/dao/UsuarioDAO.java</file>
+            <file>file:/C:/Users/Bayron/OneDrive/Documents/NetBeansProjects/Proyecto-Sistema-orientado-a-campesinos-y-tiendas-locales/Proyecto%20de%20Sistema%20orientado%20a%20campesinos%20y%20tiendas%20locales/src/inventarios/valledupar/dao/ProductoDAO.java</file>
+            <file>file:/C:/Users/Bayron/OneDrive/Documents/NetBeansProjects/Proyecto-Sistema-orientado-a-campesinos-y-tiendas-locales/Proyecto%20de%20Sistema%20orientado%20a%20campesinos%20y%20tiendas%20locales/src/inventarios/valledupar/dao/CategoriaDAO.java</file>
         </group>
     </open-files>
 </project-private>
