@@ -1,13 +1,32 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package inventarios.valledupar.dao;
 
-/**
- *
- * @author Bayron
- */
-public class MovimientoDAO {
-    
+import inventarios.valledupar.model.Movimiento;
+import java.util.List;
+
+public class MovimientoDAO implements IMovimientoDAO {
+
+    @Override
+    public void guardar(Movimiento movimiento) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public Movimiento buscarPorId(int idMovimiento) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public List<Movimiento> buscarTodos() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public List<Movimiento> buscarPorProducto(int idProducto) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public List<Movimiento> buscarPorPeriodo(String fechaInicio, String fechaFin) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }
