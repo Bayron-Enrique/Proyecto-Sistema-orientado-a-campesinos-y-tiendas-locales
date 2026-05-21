@@ -1,37 +1,120 @@
 package inventarios.valledupar.dao;
 
+import inventarios.valledupar.dao.conexion.ConexionBD;
 import inventarios.valledupar.model.Usuario;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class UsuarioDAO implements IUsuarioDAO {
 
+    private Connection conn;
+
+    public UsuarioDAO() {
+        this.conn = ConexionBD.getConexion();
+    }
+
     @Override
     public void guardar(Usuario usuario) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        String sql = "INSERT INTO usuarios VALUES (seq_usuarios.NEXTVAL, ?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, usuario.getNombre());
+            ps.setString(2, usuario.getCorreo());
+            ps.setString(3, usuario.getTelefono());
+            ps.setString(4, usuario.getContrasena());
+            ps.setString(5, usuario.getRol());
+            ps.setString(6, usuario.getEstado());
+            ps.setString(7, usuario.getFechaRegistro());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Error al guardar usuario: " + e.getMessage());
+        }
     }
 
     @Override
     public Usuario buscarPorId(int idUsuario) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        String sql = "SELECT * FROM usuarios WHERE id_usuario = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, idUsuario);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return mapearUsuario(rs);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al buscar usuario: " + e.getMessage());
+        }
+        return null;
     }
 
     @Override
     public List<Usuario> buscarTodos() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        List<Usuario> lista = new ArrayList<>();
+        String sql = "SELECT * FROM usuarios";
+        try (Statement st = conn.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+            while (rs.next()) {
+                lista.add(mapearUsuario(rs));
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al listar usuarios: " + e.getMessage());
+        }
+        return lista;
     }
 
     @Override
     public void actualizar(Usuario usuario) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        String sql = "UPDATE usuarios SET nombre=?, correo=?, telefono=?, contrasena=?, rol=?, estado=? WHERE id_usuario=?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, usuario.getNombre());
+            ps.setString(2, usuario.getCorreo());
+            ps.setString(3, usuario.getTelefono());
+            ps.setString(4, usuario.getContrasena());
+            ps.setString(5, usuario.getRol());
+            ps.setString(6, usuario.getEstado());
+            ps.setInt(7, usuario.getIdUsuario());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Error al actualizar usuario: " + e.getMessage());
+        }
     }
 
     @Override
     public void eliminar(int idUsuario) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        String sql = "DELETE FROM usuarios WHERE id_usuario = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, idUsuario);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Error al eliminar usuario: " + e.getMessage());
+        }
     }
 
     @Override
     public Usuario autenticar(String correo, String contrasena) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        String sql = "SELECT * FROM usuarios WHERE correo = ? AND contrasena = ? AND estado = 'activo'";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, correo);
+            ps.setString(2, contrasena);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return mapearUsuario(rs);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al autenticar: " + e.getMessage());
+        }
+        return null;
+    }
+
+    private Usuario mapearUsuario(ResultSet rs) throws SQLException {
+        return new Usuario(
+            rs.getInt("id_usuario"),
+            rs.getString("nombre"),
+            rs.getString("correo"),
+            rs.getString("telefono"),
+            rs.getString("contrasena"),
+            rs.getString("rol"),
+            rs.getString("estado"),
+            rs.getString("fecha_registro")
+        );
     }
 }
