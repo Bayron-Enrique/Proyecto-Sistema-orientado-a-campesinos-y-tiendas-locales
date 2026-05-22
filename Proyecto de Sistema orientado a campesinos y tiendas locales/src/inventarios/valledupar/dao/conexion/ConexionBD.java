@@ -17,7 +17,7 @@ public class ConexionBD {
     public static Connection getConexion() {
         try {
             if (conexion == null || conexion.isClosed()) {
-                Class.forName("oracle.jdbc.driver.OracleDriver");
+                Class.forName("oracle.jdbc.OracleDriver");
                 conexion = DriverManager.getConnection(URL, USUARIO, CONTRASENA);
             }
         } catch (ClassNotFoundException | SQLException e) {
