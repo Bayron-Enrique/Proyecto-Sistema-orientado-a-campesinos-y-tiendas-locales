@@ -63,7 +63,7 @@ public class UsuarioDAO implements IUsuarioDAO {
 
     @Override
     public void actualizar(Usuario usuario) {
-        String sql = "UPDATE usuarios SET nombre=?, correo=?, telefono=?, contrasena=?, rol=?, estado=? WHERE id_usuario=?";
+        String sql = "UPDATE usuarios SET nombre_usuario=?, correo=?, telefono=?, contrasena=?, rol=?, estado=? WHERE id_usuario=?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, usuario.getNombre());
             ps.setString(2, usuario.getCorreo());
@@ -108,7 +108,7 @@ public class UsuarioDAO implements IUsuarioDAO {
     private Usuario mapearUsuario(ResultSet rs) throws SQLException {
         return new Usuario(
             rs.getInt("id_usuario"),
-            rs.getString("nombre"),
+            rs.getString("nombre_usuario"),
             rs.getString("correo"),
             rs.getString("telefono"),
             rs.getString("contrasena"),
