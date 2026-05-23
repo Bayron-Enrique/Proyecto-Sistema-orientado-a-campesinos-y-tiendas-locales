@@ -31,7 +31,7 @@ public class VentanaProductos extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // Panel superior con busqueda y botones
+        // Panel superior
         JPanel panelSuperior = new JPanel(new FlowLayout(FlowLayout.LEFT));
         panelSuperior.add(new JLabel("Buscar:"));
         txtBuscar = new JTextField(15);
@@ -60,10 +60,24 @@ public class VentanaProductos extends JFrame {
 
         // Acciones
         btnActualizar.addActionListener(e -> cargarProductos());
-        btnNuevo.addActionListener(e ->
-            JOptionPane.showMessageDialog(this, "Formulario de nuevo producto proximamente."));
-        btnEditar.addActionListener(e ->
-            JOptionPane.showMessageDialog(this, "Formulario de edicion proximamente."));
+
+        btnNuevo.addActionListener(e -> {
+            new FormProducto(this, null).setVisible(true);
+            cargarProductos();
+        });
+
+        btnEditar.addActionListener(e -> {
+            int fila = tablaProductos.getSelectedRow();
+            if (fila == -1) {
+                JOptionPane.showMessageDialog(this, "Selecciona un producto primero.");
+                return;
+            }
+            int id = (int) modeloTabla.getValueAt(fila, 0);
+            Producto p = inventarioService.buscarProducto(id);
+            new FormProducto(this, p).setVisible(true);
+            cargarProductos();
+        });
+
         btnEliminar.addActionListener(e -> {
             int fila = tablaProductos.getSelectedRow();
             if (fila == -1) {
