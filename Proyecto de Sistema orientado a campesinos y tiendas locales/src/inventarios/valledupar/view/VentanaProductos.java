@@ -31,7 +31,6 @@ public class VentanaProductos extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // Panel superior
         JPanel panelSuperior = new JPanel(new FlowLayout(FlowLayout.LEFT));
         panelSuperior.add(new JLabel("Buscar:"));
         txtBuscar = new JTextField(15);
@@ -46,7 +45,6 @@ public class VentanaProductos extends JFrame {
         panelSuperior.add(btnActualizar);
         add(panelSuperior, BorderLayout.NORTH);
 
-        // Tabla
         String[] columnas = {"ID", "Nombre", "Categoria", "Stock", "Precio Venta", "Estado"};
         modeloTabla = new DefaultTableModel(columnas, 0) {
             @Override
@@ -58,7 +56,6 @@ public class VentanaProductos extends JFrame {
         tablaProductos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         add(new JScrollPane(tablaProductos), BorderLayout.CENTER);
 
-        // Acciones
         btnActualizar.addActionListener(e -> cargarProductos());
 
         btnNuevo.addActionListener(e -> {
