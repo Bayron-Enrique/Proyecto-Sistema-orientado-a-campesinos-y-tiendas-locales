@@ -1,6 +1,7 @@
 package inventarios.valledupar.view;
 
 import inventarios.valledupar.model.Movimiento;
+import inventarios.valledupar.model.Usuario;
 import inventarios.valledupar.service.InventarioService;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -17,8 +18,10 @@ public class VentanaMovimientos extends JFrame {
     private JTextField txtFechaFin;
     private JButton btnFiltrar;
     private InventarioService inventarioService;
+    private Usuario usuarioActivo;
 
-    public VentanaMovimientos() {
+    public VentanaMovimientos(Usuario usuarioActivo) {
+        this.usuarioActivo = usuarioActivo;
         inventarioService = new InventarioService();
         initComponents();
         cargarMovimientos();
@@ -31,7 +34,6 @@ public class VentanaMovimientos extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // Panel superior
         JPanel panelSuperior = new JPanel(new FlowLayout(FlowLayout.LEFT));
         panelSuperior.add(new JLabel("Desde:"));
         txtFechaInicio = new JTextField(10);
@@ -47,7 +49,6 @@ public class VentanaMovimientos extends JFrame {
         panelSuperior.add(btnActualizar);
         add(panelSuperior, BorderLayout.NORTH);
 
-        // Tabla
         String[] columnas = {"ID", "Producto", "Usuario", "Tipo", "Cantidad", "Fecha", "Stock Resultante"};
         modeloTabla = new DefaultTableModel(columnas, 0) {
             @Override
@@ -59,10 +60,13 @@ public class VentanaMovimientos extends JFrame {
         tablaMovimientos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         add(new JScrollPane(tablaMovimientos), BorderLayout.CENTER);
 
-        // Acciones
         btnActualizar.addActionListener(e -> cargarMovimientos());
-        btnRegistrar.addActionListener(e ->
-            JOptionPane.showMessageDialog(this, "Formulario de registro proximamente."));
+
+        btnRegistrar.addActionListener(e -> {
+            new FormMovimiento(this, usuarioActivo.getIdUsuario()).setVisible(true);
+            cargarMovimientos();
+        });
+
         btnFiltrar.addActionListener(e -> {
             String inicio = txtFechaInicio.getText().trim();
             String fin = txtFechaFin.getText().trim();
