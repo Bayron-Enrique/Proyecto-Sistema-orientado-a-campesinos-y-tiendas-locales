@@ -28,7 +28,6 @@ public class VentanaPrincipal extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        // Panel superior
         JPanel panelSuperior = new JPanel(new FlowLayout(FlowLayout.LEFT));
         lblBienvenida = new JLabel("Usuario: " + usuarioActivo.getNombre()
                 + "  |  Rol: " + usuarioActivo.getRol());
@@ -36,17 +35,16 @@ public class VentanaPrincipal extends JFrame {
         panelSuperior.add(lblBienvenida);
         add(panelSuperior, BorderLayout.NORTH);
 
-        // Panel menu lateral
         panelMenu = new JPanel();
         panelMenu.setLayout(new GridLayout(6, 1, 5, 5));
         panelMenu.setPreferredSize(new Dimension(160, 0));
         panelMenu.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        btnProductos = new JButton("Productos");
+        btnProductos   = new JButton("Productos");
         btnMovimientos = new JButton("Movimientos");
-        btnAlertas = new JButton("Alertas");
-        btnReportes = new JButton("Reportes");
-        btnSalir = new JButton("Cerrar sesion");
+        btnAlertas     = new JButton("Alertas");
+        btnReportes    = new JButton("Reportes");
+        btnSalir       = new JButton("Cerrar sesion");
 
         panelMenu.add(btnProductos);
         panelMenu.add(btnMovimientos);
@@ -55,7 +53,6 @@ public class VentanaPrincipal extends JFrame {
         panelMenu.add(btnSalir);
         add(panelMenu, BorderLayout.WEST);
 
-        // Panel contenido central
         panelContenido = new JPanel(new BorderLayout());
         panelContenido.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         JLabel lblInicio = new JLabel("Selecciona un modulo del menu lateral.",
@@ -64,11 +61,10 @@ public class VentanaPrincipal extends JFrame {
         panelContenido.add(lblInicio, BorderLayout.CENTER);
         add(panelContenido, BorderLayout.CENTER);
 
-        // Acciones botones
         btnProductos.addActionListener(e -> new VentanaProductos().setVisible(true));
-        btnMovimientos.addActionListener(e -> new VentanaMovimientos().setVisible(true));
+        btnMovimientos.addActionListener(e -> new VentanaMovimientos(usuarioActivo).setVisible(true));
         btnAlertas.addActionListener(e -> new VentanaAlertas().setVisible(true));
-        btnReportes.addActionListener(e -> new VentanaReportes().setVisible(true));
+        btnReportes.addActionListener(e -> new VentanaReportes(usuarioActivo).setVisible(true));
         btnSalir.addActionListener(e -> {
             int confirmar = JOptionPane.showConfirmDialog(this,
                     "¿Deseas cerrar sesion?", "Salir",
