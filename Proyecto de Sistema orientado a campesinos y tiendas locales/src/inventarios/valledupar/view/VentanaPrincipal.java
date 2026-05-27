@@ -15,6 +15,7 @@ public class VentanaPrincipal extends JFrame {
     private JButton btnAlertas;
     private JButton btnReportes;
     private JButton btnSalir;
+    private CardLayout cardLayout;
 
     public VentanaPrincipal(Usuario usuarioActivo) {
         this.usuarioActivo = usuarioActivo;
@@ -23,11 +24,12 @@ public class VentanaPrincipal extends JFrame {
 
     private void initComponents() {
         setTitle("Sistema de Inventarios - Valledupar");
-        setSize(750, 500);
+        setSize(950, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
+        // Panel superior
         JPanel panelSuperior = new JPanel(new FlowLayout(FlowLayout.LEFT));
         lblBienvenida = new JLabel("Usuario: " + usuarioActivo.getNombre()
                 + "  |  Rol: " + usuarioActivo.getRol());
@@ -35,6 +37,7 @@ public class VentanaPrincipal extends JFrame {
         panelSuperior.add(lblBienvenida);
         add(panelSuperior, BorderLayout.NORTH);
 
+        // Panel menu lateral
         panelMenu = new JPanel();
         panelMenu.setLayout(new GridLayout(6, 1, 5, 5));
         panelMenu.setPreferredSize(new Dimension(160, 0));
@@ -53,18 +56,37 @@ public class VentanaPrincipal extends JFrame {
         panelMenu.add(btnSalir);
         add(panelMenu, BorderLayout.WEST);
 
-        panelContenido = new JPanel(new BorderLayout());
-        panelContenido.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        JLabel lblInicio = new JLabel("Selecciona un modulo del menu lateral.",
-                SwingConstants.CENTER);
+        // Panel contenido con CardLayout
+        cardLayout = new CardLayout();
+        panelContenido = new JPanel(cardLayout);
+
+        JLabel lblInicio = new JLabel("Selecciona un modulo del menu lateral.", SwingConstants.CENTER);
         lblInicio.setFont(new Font("Arial", Font.PLAIN, 13));
-        panelContenido.add(lblInicio, BorderLayout.CENTER);
+        panelContenido.add(lblInicio, "inicio");
+
+        VentanaProductos panelProductos = new VentanaProductos();
+        panelProductos.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        panelContenido.add(panelProductos.getContentPane(), "productos");
+
+        VentanaMovimientos panelMovimientos = new VentanaMovimientos(usuarioActivo);
+        panelMovimientos.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        panelContenido.add(panelMovimientos.getContentPane(), "movimientos");
+
+        VentanaAlertas panelAlertas = new VentanaAlertas();
+        panelAlertas.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        panelContenido.add(panelAlertas.getContentPane(), "alertas");
+
+        VentanaReportes panelReportes = new VentanaReportes(usuarioActivo);
+        panelReportes.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        panelContenido.add(panelReportes.getContentPane(), "reportes");
+
         add(panelContenido, BorderLayout.CENTER);
 
-        btnProductos.addActionListener(e -> new VentanaProductos().setVisible(true));
-        btnMovimientos.addActionListener(e -> new VentanaMovimientos(usuarioActivo).setVisible(true));
-        btnAlertas.addActionListener(e -> new VentanaAlertas().setVisible(true));
-        btnReportes.addActionListener(e -> new VentanaReportes(usuarioActivo).setVisible(true));
+        // Acciones botones
+        btnProductos.addActionListener(e -> cardLayout.show(panelContenido, "productos"));
+        btnMovimientos.addActionListener(e -> cardLayout.show(panelContenido, "movimientos"));
+        btnAlertas.addActionListener(e -> cardLayout.show(panelContenido, "alertas"));
+        btnReportes.addActionListener(e -> cardLayout.show(panelContenido, "reportes"));
         btnSalir.addActionListener(e -> {
             int confirmar = JOptionPane.showConfirmDialog(this,
                     "¿Deseas cerrar sesion?", "Salir",

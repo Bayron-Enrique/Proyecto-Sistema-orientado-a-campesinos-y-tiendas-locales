@@ -7,10 +7,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 public class FormMovimiento extends JDialog {
 
-    private JTextField txtIdProducto;
+    private JComboBox<String> cmbProducto;
     private JTextField txtCantidad;
     private JTextField txtObservacion;
     private JComboBox<String> cmbTipo;
@@ -18,6 +19,7 @@ public class FormMovimiento extends JDialog {
     private JButton btnCancelar;
     private InventarioService inventarioService;
     private int idUsuario;
+    private List<Producto> productosActivos;
 
     public FormMovimiento(JFrame parent, int idUsuario) {
         super(parent, "Registrar Movimiento", true);
@@ -27,7 +29,7 @@ public class FormMovimiento extends JDialog {
     }
 
     private void initComponents() {
-        setSize(380, 320);
+        setSize(400, 320);
         setLocationRelativeTo(null);
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -35,10 +37,14 @@ public class FormMovimiento extends JDialog {
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         gbc.gridx = 0; gbc.gridy = 0;
-        add(new JLabel("ID Producto:"), gbc);
-        txtIdProducto = new JTextField(20);
+        add(new JLabel("Producto:"), gbc);
+        productosActivos = inventarioService.listarProductos();
+        cmbProducto = new JComboBox<>();
+        for (Producto p : productosActivos) {
+            cmbProducto.addItem(p.getIdProducto() + " - " + p.getNombreProducto());
+        }
         gbc.gridx = 1;
-        add(txtIdProducto, gbc);
+        add(cmbProducto, gbc);
 
         gbc.gridx = 0; gbc.gridy = 1;
         add(new JLabel("Tipo:"), gbc);
@@ -72,19 +78,18 @@ public class FormMovimiento extends JDialog {
 
     private void guardar() {
         try {
-            int idProducto = Integer.parseInt(txtIdProducto.getText().trim());
+            int indexSeleccionado = cmbProducto.getSelectedIndex();
+            if (indexSeleccionado == -1) {
+                JOptionPane.showMessageDialog(this, "Selecciona un producto.");
+                return;
+            }
+            Producto producto = productosActivos.get(indexSeleccionado);
             int cantidad = Integer.parseInt(txtCantidad.getText().trim());
             String tipo = (String) cmbTipo.getSelectedItem();
             String observacion = txtObservacion.getText().trim();
 
-            Producto producto = inventarioService.buscarProducto(idProducto);
-            if (producto == null) {
-                JOptionPane.showMessageDialog(this, "Producto no encontrado.");
-                return;
-            }
-
             Movimiento movimiento = new Movimiento();
-            movimiento.setIdProducto(idProducto);
+            movimiento.setIdProducto(producto.getIdProducto());
             movimiento.setIdUsuario(idUsuario);
             movimiento.setTipoMovimiento(tipo);
             movimiento.setCantidad(cantidad);
@@ -97,7 +102,7 @@ public class FormMovimiento extends JDialog {
             dispose();
 
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Verifica que los campos numericos sean correctos.");
+            JOptionPane.showMessageDialog(this, "Verifica que la cantidad sea un numero.");
         }
     }
 }

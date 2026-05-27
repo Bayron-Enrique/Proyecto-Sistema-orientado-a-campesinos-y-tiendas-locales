@@ -1,6 +1,7 @@
 package inventarios.valledupar.view;
 
 import inventarios.valledupar.model.Movimiento;
+import inventarios.valledupar.model.Producto;
 import inventarios.valledupar.model.Usuario;
 import inventarios.valledupar.service.InventarioService;
 import javax.swing.*;
@@ -82,9 +83,11 @@ public class VentanaMovimientos extends JFrame {
         modeloTabla.setRowCount(0);
         List<Movimiento> movimientos = inventarioService.listarMovimientos();
         for (Movimiento m : movimientos) {
+            Producto p = inventarioService.buscarProducto(m.getIdProducto());
+            String nombreProducto = p != null ? p.getNombreProducto() : "ID: " + m.getIdProducto();
             modeloTabla.addRow(new Object[]{
                 m.getIdMovimiento(),
-                m.getIdProducto(),
+                nombreProducto,
                 m.getIdUsuario(),
                 m.getTipoMovimiento(),
                 m.getCantidad(),
@@ -98,9 +101,11 @@ public class VentanaMovimientos extends JFrame {
         modeloTabla.setRowCount(0);
         List<Movimiento> movimientos = inventarioService.listarMovimientosPorPeriodo(inicio, fin);
         for (Movimiento m : movimientos) {
+            Producto p = inventarioService.buscarProducto(m.getIdProducto());
+            String nombreProducto = p != null ? p.getNombreProducto() : "ID: " + m.getIdProducto();
             modeloTabla.addRow(new Object[]{
                 m.getIdMovimiento(),
-                m.getIdProducto(),
+                nombreProducto,
                 m.getIdUsuario(),
                 m.getTipoMovimiento(),
                 m.getCantidad(),
