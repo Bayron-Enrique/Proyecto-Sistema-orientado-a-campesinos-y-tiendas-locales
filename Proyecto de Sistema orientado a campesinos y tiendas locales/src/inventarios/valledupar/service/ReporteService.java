@@ -24,10 +24,12 @@ public class ReporteService {
     public Reporte generarReporteInventario(int idUsuario) {
         List<Producto> productos = productoDAO.buscarTodos();
         StringBuilder contenido = new StringBuilder();
+        contenido.append("=== REPORTE DE INVENTARIO GENERAL ===\n\n");
         for (Producto p : productos) {
-            contenido.append(p.getNombreProducto())
-                     .append(" - Stock: ").append(p.getStockActual())
-                     .append(" - Precio venta: ").append(p.getPrecioVenta())
+            contenido.append("Producto: ").append(p.getNombreProducto())
+                     .append(" | Stock: ").append(p.getStockActual())
+                     .append(" | Precio venta: ").append(p.getPrecioVenta())
+                     .append(" | Estado: ").append(p.getEstado())
                      .append("\n");
         }
         Reporte reporte = new Reporte();
@@ -42,10 +44,13 @@ public class ReporteService {
     public Reporte generarReporteMovimientos(int idUsuario, String fechaInicio, String fechaFin) {
         List<Movimiento> movimientos = movimientoDAO.buscarPorPeriodo(fechaInicio, fechaFin);
         StringBuilder contenido = new StringBuilder();
+        contenido.append("=== REPORTE DE MOVIMIENTOS ===\n");
+        contenido.append("Periodo: ").append(fechaInicio).append(" al ").append(fechaFin).append("\n\n");
         for (Movimiento m : movimientos) {
-            contenido.append(m.getFechaMovimiento())
-                     .append(" - Tipo: ").append(m.getTipoMovimiento())
-                     .append(" - Cantidad: ").append(m.getCantidad())
+            contenido.append("Fecha: ").append(m.getFechaMovimiento())
+                     .append(" | Tipo: ").append(m.getTipoMovimiento())
+                     .append(" | Cantidad: ").append(m.getCantidad())
+                     .append(" | Stock resultante: ").append(m.getStockResultante())
                      .append("\n");
         }
         Reporte reporte = new Reporte();

@@ -35,7 +35,6 @@ public class VentanaReportes extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // Panel superior
         JPanel panelSuperior = new JPanel(new FlowLayout(FlowLayout.LEFT));
         rbInventario = new JRadioButton("Inventario general", true);
         rbMovimientos = new JRadioButton("Movimientos por periodo");
@@ -46,42 +45,40 @@ public class VentanaReportes extends JFrame {
         panelSuperior.add(rbMovimientos);
         add(panelSuperior, BorderLayout.NORTH);
 
-        // Panel de fechas
         JPanel panelFechas = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panelFechas.add(new JLabel("Desde:"));
-        txtFechaInicio = new JTextField(10);
+        panelFechas.add(new JLabel("Desde (yyyy-MM-dd):"));
+        txtFechaInicio = new JTextField(12);
         panelFechas.add(txtFechaInicio);
-        panelFechas.add(new JLabel("Hasta:"));
-        txtFechaFin = new JTextField(10);
+        panelFechas.add(new JLabel("Hasta (yyyy-MM-dd):"));
+        txtFechaFin = new JTextField(12);
         panelFechas.add(txtFechaFin);
         btnGenerar = new JButton("Generar reporte");
         panelFechas.add(btnGenerar);
         add(panelFechas, BorderLayout.CENTER);
 
-        // Area de contenido
         txtContenido = new JTextArea();
         txtContenido.setEditable(false);
         txtContenido.setFont(new Font("Monospaced", Font.PLAIN, 12));
         add(new JScrollPane(txtContenido), BorderLayout.SOUTH);
 
-        // Accion boton
         btnGenerar.addActionListener(e -> {
             int idUsuario = usuarioActivo != null ? usuarioActivo.getIdUsuario() : 0;
             Reporte reporte;
 
             if (rbInventario.isSelected()) {
                 reporte = reporteService.generarReporteInventario(idUsuario);
+                txtContenido.setText(reporte.getContenido());
             } else {
                 String inicio = txtFechaInicio.getText().trim();
                 String fin = txtFechaFin.getText().trim();
                 if (inicio.isEmpty() || fin.isEmpty()) {
                     JOptionPane.showMessageDialog(this,
-                            "Ingresa las dos fechas para el reporte.");
+                            "Ingresa las dos fechas en formato yyyy-MM-dd");
                     return;
                 }
                 reporte = reporteService.generarReporteMovimientos(idUsuario, inicio, fin);
+                txtContenido.setText(reporte.getContenido());
             }
-            txtContenido.setText(reporte.getContenido());
         });
     }
 }

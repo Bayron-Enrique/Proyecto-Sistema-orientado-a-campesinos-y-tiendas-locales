@@ -80,7 +80,7 @@ public class MovimientoDAO implements IMovimientoDAO {
     @Override
     public List<Movimiento> buscarPorPeriodo(String fechaInicio, String fechaFin) {
         List<Movimiento> lista = new ArrayList<>();
-        String sql = "SELECT * FROM movimientos WHERE fecha_movimiento BETWEEN ? AND ?";
+        String sql = "SELECT * FROM movimientos WHERE fecha_movimiento BETWEEN TO_DATE(?, 'YYYY-MM-DD') AND TO_DATE(?, 'YYYY-MM-DD') + 1";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, fechaInicio);
             ps.setString(2, fechaFin);
