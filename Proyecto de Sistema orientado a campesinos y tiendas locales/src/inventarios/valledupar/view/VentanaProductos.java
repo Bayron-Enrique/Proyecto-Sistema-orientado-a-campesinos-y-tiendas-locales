@@ -37,7 +37,7 @@ public class VentanaProductos extends JFrame {
         panelSuperior.add(txtBuscar);
         btnNuevo = new JButton("+ Nuevo");
         btnEditar = new JButton("Editar");
-        btnEliminar = new JButton("Eliminar");
+        btnEliminar = new JButton("Desactivar");
         btnActualizar = new JButton("Actualizar");
         panelSuperior.add(btnNuevo);
         panelSuperior.add(btnEditar);
@@ -82,12 +82,15 @@ public class VentanaProductos extends JFrame {
                 return;
             }
             int confirmar = JOptionPane.showConfirmDialog(this,
-                    "¿Eliminar este producto?", "Confirmar",
+                    "¿Desactivar este producto?", "Confirmar",
                     JOptionPane.YES_NO_OPTION);
             if (confirmar == JOptionPane.YES_OPTION) {
                 int id = (int) modeloTabla.getValueAt(fila, 0);
-                inventarioService.eliminarProducto(id);
+                Producto p = inventarioService.buscarProducto(id);
+                p.setEstado("inactivo");
+                inventarioService.actualizarProducto(p);
                 cargarProductos();
+                JOptionPane.showMessageDialog(this, "Producto desactivado correctamente.");
             }
         });
     }
