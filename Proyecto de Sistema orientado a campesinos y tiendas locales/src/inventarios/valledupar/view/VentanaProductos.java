@@ -3,6 +3,7 @@ package inventarios.valledupar.view;
 import inventarios.valledupar.model.Producto;
 import inventarios.valledupar.service.InventarioService;
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
@@ -108,5 +109,23 @@ public class VentanaProductos extends JFrame {
                 p.getEstado()
             });
         }
+
+        tablaProductos.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value,
+                    boolean isSelected, boolean hasFocus, int row, int column) {
+                super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                String estado = (String) table.getValueAt(row, 5);
+                if ("inactivo".equalsIgnoreCase(estado)) {
+                    setBackground(new Color(255, 180, 180));
+                } else {
+                    setBackground(new Color(180, 255, 180));
+                }
+                if (isSelected) {
+                    setBackground(table.getSelectionBackground());
+                }
+                return this;
+            }
+        });
     }
 }
