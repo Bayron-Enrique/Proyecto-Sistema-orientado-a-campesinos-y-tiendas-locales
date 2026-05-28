@@ -16,13 +16,15 @@ public class MovimientoDAO implements IMovimientoDAO {
 
     @Override
     public void guardar(Movimiento movimiento) {
-        String sql = "INSERT INTO movimientos VALUES (seq_movimientos.NEXTVAL, ?, ?, ?, ?, ?, ?, ?)";
+        // CORRECCIÓN: ya no se usa TO_DATE ni formato de texto, se pasa Date directamente
+        String sql = "INSERT INTO movimientos (id_movimiento, id_producto, id_usuario, tipo_movimiento, cantidad, fecha_movimiento, observacion, stock_resultante, activo, fecha_creacion) "
+                   + "VALUES (seq_movimientos.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, 1, SYSDATE)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, movimiento.getIdProducto());
             ps.setInt(2, movimiento.getIdUsuario());
             ps.setString(3, movimiento.getTipoMovimiento());
             ps.setInt(4, movimiento.getCantidad());
-            ps.setString(5, movimiento.getFechaMovimiento());
+            ps.setDate(5, movimiento.getFechaMovimiento()); // CORRECCIÓN: setDate en vez de setString
             ps.setString(6, movimiento.getObservacion());
             ps.setInt(7, movimiento.getStockResultante());
             ps.executeUpdate();
@@ -80,6 +82,7 @@ public class MovimientoDAO implements IMovimientoDAO {
     @Override
     public List<Movimiento> buscarPorPeriodo(String fechaInicio, String fechaFin) {
         List<Movimiento> lista = new ArrayList<>();
+        // CORRECCIÓN: TO_DATE con formato simple yyyy-MM-dd, sin NLS
         String sql = "SELECT * FROM movimientos WHERE fecha_movimiento BETWEEN TO_DATE(?, 'YYYY-MM-DD') AND TO_DATE(?, 'YYYY-MM-DD') + 1";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, fechaInicio);
@@ -101,7 +104,7 @@ public class MovimientoDAO implements IMovimientoDAO {
             rs.getInt("id_usuario"),
             rs.getString("tipo_movimiento"),
             rs.getInt("cantidad"),
-            rs.getString("fecha_movimiento"),
+            rs.getDate("fecha_movimiento"), // CORRECCIÓN: getDate en vez de getString
             rs.getString("observacion"),
             rs.getInt("stock_resultante")
         );

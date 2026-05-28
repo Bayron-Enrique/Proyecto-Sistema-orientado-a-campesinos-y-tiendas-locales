@@ -14,7 +14,8 @@ public class VentanaProductos extends JFrame {
     private DefaultTableModel modeloTabla;
     private JButton btnNuevo;
     private JButton btnEditar;
-    private JButton btnEliminar;
+    private JButton btnDesactivar;
+    private JButton btnActivar;
     private JButton btnActualizar;
     private JTextField txtBuscar;
     private InventarioService inventarioService;
@@ -38,11 +39,13 @@ public class VentanaProductos extends JFrame {
         panelSuperior.add(txtBuscar);
         btnNuevo = new JButton("+ Nuevo");
         btnEditar = new JButton("Editar");
-        btnEliminar = new JButton("Desactivar");
+        btnDesactivar = new JButton("Desactivar");
+        btnActivar = new JButton("Activar");
         btnActualizar = new JButton("Actualizar");
         panelSuperior.add(btnNuevo);
         panelSuperior.add(btnEditar);
-        panelSuperior.add(btnEliminar);
+        panelSuperior.add(btnDesactivar);
+        panelSuperior.add(btnActivar);
         panelSuperior.add(btnActualizar);
         add(panelSuperior, BorderLayout.NORTH);
 
@@ -76,7 +79,7 @@ public class VentanaProductos extends JFrame {
             cargarProductos();
         });
 
-        btnEliminar.addActionListener(e -> {
+        btnDesactivar.addActionListener(e -> {
             int fila = tablaProductos.getSelectedRow();
             if (fila == -1) {
                 JOptionPane.showMessageDialog(this, "Selecciona un producto primero.");
@@ -91,7 +94,26 @@ public class VentanaProductos extends JFrame {
                 p.setEstado("inactivo");
                 inventarioService.actualizarProducto(p);
                 cargarProductos();
-                JOptionPane.showMessageDialog(this, "Producto desactivado correctamente.");
+                JOptionPane.showMessageDialog(this, "Producto desactivado.");
+            }
+        });
+
+        btnActivar.addActionListener(e -> {
+            int fila = tablaProductos.getSelectedRow();
+            if (fila == -1) {
+                JOptionPane.showMessageDialog(this, "Selecciona un producto primero.");
+                return;
+            }
+            int confirmar = JOptionPane.showConfirmDialog(this,
+                    "¿Activar este producto?", "Confirmar",
+                    JOptionPane.YES_NO_OPTION);
+            if (confirmar == JOptionPane.YES_OPTION) {
+                int id = (int) modeloTabla.getValueAt(fila, 0);
+                Producto p = inventarioService.buscarProducto(id);
+                p.setEstado("activo");
+                inventarioService.actualizarProducto(p);
+                cargarProductos();
+                JOptionPane.showMessageDialog(this, "Producto activado.");
             }
         });
     }

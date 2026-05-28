@@ -4,8 +4,10 @@ import inventarios.valledupar.dao.IProductoDAO;
 import inventarios.valledupar.dao.IMovimientoDAO;
 import inventarios.valledupar.dao.ProductoDAO;
 import inventarios.valledupar.dao.MovimientoDAO;
+import inventarios.valledupar.dao.conexion.ConexionBD;
 import inventarios.valledupar.model.Producto;
 import inventarios.valledupar.model.Movimiento;
+import java.sql.Connection;
 import java.util.List;
 
 public class InventarioService {
@@ -45,13 +47,28 @@ public class InventarioService {
     }
 
     public void registrarMovimiento(Movimiento movimiento, Producto producto) {
-        int stockNuevo = movimiento.calcularStockResultante(producto.getStockActual());
-        movimiento.setStockResultante(stockNuevo);
-        producto.setStockActual(stockNuevo);
-        movimientoDAO.guardar(movimiento);
-        productoDAO.actualizar(producto);
-        if (producto.tieneStockBajo()) {
-            alertaService.generarAlerta(producto);
+        Connection conn = ConexionBD.getConexion();
+        try {
+            conn.setAutoCommit(false);
+
+            int stockNuevo = movimiento.calcularStockResultante(producto.getStockActual());
+            movimiento.setStockResultante(stockNuevo);
+            producto.setStockActual(stockNuevo);
+
+            movimientoDAO.guardar(movimiento);
+            productoDAO.actualizar(producto);
+
+            conn.commit(); // confirma INSERT y UPDATE juntos
+
+            if (producto.tieneStockBajo()) {
+                alertaService.generarAlerta(producto);
+            }
+
+        } catch (Exception e) {
+            try { conn.rollback(); } catch (Exception ex) { ex.printStackTrace(); }
+            System.out.println("Error al registrar movimiento: " + e.getMessage());
+        } finally {
+            try { conn.setAutoCommit(true); } catch (Exception ex) { ex.printStackTrace(); }
         }
     }
 

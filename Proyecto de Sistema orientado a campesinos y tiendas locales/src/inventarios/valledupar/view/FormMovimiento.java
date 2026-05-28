@@ -5,8 +5,7 @@ import inventarios.valledupar.model.Producto;
 import inventarios.valledupar.service.InventarioService;
 import javax.swing.*;
 import java.awt.*;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.sql.Date;
 import java.util.List;
 
 public class FormMovimiento extends JDialog {
@@ -83,10 +82,21 @@ public class FormMovimiento extends JDialog {
                 JOptionPane.showMessageDialog(this, "Selecciona un producto.");
                 return;
             }
-            Producto producto = productosActivos.get(indexSeleccionado);
+
+            // recargar producto desde BD para tener el stock real y actualizado
+            int idProducto = productosActivos.get(indexSeleccionado).getIdProducto();
+            Producto producto = inventarioService.buscarProducto(idProducto);
+
             int cantidad = Integer.parseInt(txtCantidad.getText().trim());
             String tipo = (String) cmbTipo.getSelectedItem();
             String observacion = txtObservacion.getText().trim();
+
+            // validar stock suficiente antes de registrar una salida
+            if ("salida".equalsIgnoreCase(tipo) && cantidad > producto.getStockActual()) {
+                JOptionPane.showMessageDialog(this,
+                    "Stock insuficiente. Stock actual: " + producto.getStockActual());
+                return;
+            }
 
             Movimiento movimiento = new Movimiento();
             movimiento.setIdProducto(producto.getIdProducto());
@@ -94,8 +104,8 @@ public class FormMovimiento extends JDialog {
             movimiento.setTipoMovimiento(tipo);
             movimiento.setCantidad(cantidad);
             movimiento.setObservacion(observacion);
-            movimiento.setFechaMovimiento(LocalDateTime.now()
-                    .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            // CORRECCIÓN: fecha como java.sql.Date, sin formato de texto
+            movimiento.setFechaMovimiento(new Date(System.currentTimeMillis()));
 
             inventarioService.registrarMovimiento(movimiento, producto);
             JOptionPane.showMessageDialog(this, "Movimiento registrado correctamente.");

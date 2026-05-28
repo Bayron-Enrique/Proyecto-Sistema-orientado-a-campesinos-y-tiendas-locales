@@ -19,7 +19,7 @@ public class AlertaDAO implements IAlertaDAO {
         String sql = "INSERT INTO alertas VALUES (seq_alertas.NEXTVAL, ?, ?, ?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, alerta.getIdProducto());
-            ps.setString(2, alerta.getFechaAlerta());
+            ps.setDate(2, alerta.getFechaAlerta()); // CORRECCIÓN: setDate en vez de setString
             ps.setInt(3, alerta.getStockAlMomento());
             ps.setString(4, alerta.getEstadoAlerta());
             ps.executeUpdate();
@@ -73,7 +73,7 @@ public class AlertaDAO implements IAlertaDAO {
         return new Alerta(
             rs.getInt("id_alerta"),
             rs.getInt("id_producto"),
-            rs.getString("fecha_alerta"),
+            rs.getDate("fecha_alerta"), // CORRECCIÓN: getDate en vez de getString
             rs.getInt("stock_al_momento"),
             rs.getString("estado_alerta")
         );

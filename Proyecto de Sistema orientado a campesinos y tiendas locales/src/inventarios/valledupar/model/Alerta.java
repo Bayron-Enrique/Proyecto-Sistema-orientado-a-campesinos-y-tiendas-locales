@@ -1,16 +1,18 @@
 package inventarios.valledupar.model;
 
+import java.sql.Date;
+
 public class Alerta {
 
     private int idAlerta;
     private int idProducto;
-    private String fechaAlerta;
+    private Date fechaAlerta; // CORRECCIÓN: Date en vez de String
     private int stockAlMomento;
     private String estadoAlerta;
 
     public Alerta() {}
 
-    public Alerta(int idAlerta, int idProducto, String fechaAlerta,
+    public Alerta(int idAlerta, int idProducto, Date fechaAlerta,
                   int stockAlMomento, String estadoAlerta) {
         this.idAlerta = idAlerta;
         this.idProducto = idProducto;
@@ -25,8 +27,8 @@ public class Alerta {
     public int getIdProducto() { return idProducto; }
     public void setIdProducto(int idProducto) { this.idProducto = idProducto; }
 
-    public String getFechaAlerta() { return fechaAlerta; }
-    public void setFechaAlerta(String fechaAlerta) { this.fechaAlerta = fechaAlerta; }
+    public Date getFechaAlerta() { return fechaAlerta; }
+    public void setFechaAlerta(Date fechaAlerta) { this.fechaAlerta = fechaAlerta; }
 
     public int getStockAlMomento() { return stockAlMomento; }
     public void setStockAlMomento(int stockAlMomento) { this.stockAlMomento = stockAlMomento; }

@@ -4,8 +4,7 @@ import inventarios.valledupar.dao.AlertaDAO;
 import inventarios.valledupar.dao.IAlertaDAO;
 import inventarios.valledupar.model.Alerta;
 import inventarios.valledupar.model.Producto;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.sql.Date;
 import java.util.List;
 
 public class AlertaService {
@@ -21,8 +20,7 @@ public class AlertaService {
         alerta.setIdProducto(producto.getIdProducto());
         alerta.setStockAlMomento(producto.getStockActual());
         alerta.setEstadoAlerta("pendiente");
-        alerta.setFechaAlerta(LocalDateTime.now()
-                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        alerta.setFechaAlerta(new Date(System.currentTimeMillis())); // CORRECCIÓN: Date en vez de String formateado
         alertaDAO.guardar(alerta);
     }
 

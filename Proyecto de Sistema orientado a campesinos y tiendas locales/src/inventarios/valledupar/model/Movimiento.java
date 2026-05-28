@@ -1,5 +1,7 @@
 package inventarios.valledupar.model;
 
+import java.sql.Date;
+
 public class Movimiento {
 
     private int idMovimiento;
@@ -7,14 +9,14 @@ public class Movimiento {
     private int idUsuario;
     private String tipoMovimiento;
     private int cantidad;
-    private String fechaMovimiento;
+    private Date fechaMovimiento;
     private String observacion;
     private int stockResultante;
 
     public Movimiento() {}
 
     public Movimiento(int idMovimiento, int idProducto, int idUsuario,
-                      String tipoMovimiento, int cantidad, String fechaMovimiento,
+                      String tipoMovimiento, int cantidad, Date fechaMovimiento,
                       String observacion, int stockResultante) {
         this.idMovimiento = idMovimiento;
         this.idProducto = idProducto;
@@ -41,8 +43,8 @@ public class Movimiento {
     public int getCantidad() { return cantidad; }
     public void setCantidad(int cantidad) { this.cantidad = cantidad; }
 
-    public String getFechaMovimiento() { return fechaMovimiento; }
-    public void setFechaMovimiento(String fechaMovimiento) { this.fechaMovimiento = fechaMovimiento; }
+    public Date getFechaMovimiento() { return fechaMovimiento; }
+    public void setFechaMovimiento(Date fechaMovimiento) { this.fechaMovimiento = fechaMovimiento; }
 
     public String getObservacion() { return observacion; }
     public void setObservacion(String observacion) { this.observacion = observacion; }
