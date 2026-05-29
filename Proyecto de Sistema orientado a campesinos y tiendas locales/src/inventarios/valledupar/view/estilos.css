@@ -1,0 +1,148 @@
+/* Colores base */
+.root {
+    -fx-background-color: #f5f9f5;
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+    -fx-font-size: 13px;
+}
+
+/* Menu lateral */
+.menu-lateral {
+    -fx-background-color: #1b5e20;
+    -fx-padding: 15;
+    -fx-spacing: 8;
+}
+
+/* Botones del menu */
+.btn-menu {
+    -fx-background-color: #2e7d32;
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-pref-width: 150px;
+    -fx-pref-height: 40px;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+}
+
+.btn-menu:hover {
+    -fx-background-color: #43a047;
+}
+
+.btn-menu:selected, .btn-menu-activo {
+    -fx-background-color: #66bb6a;
+    -fx-text-fill: #1b5e20;
+}
+
+/* Boton cerrar sesion */
+.btn-salir {
+    -fx-background-color: #c62828;
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-pref-width: 150px;
+    -fx-pref-height: 40px;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+}
+
+.btn-salir:hover {
+    -fx-background-color: #ef5350;
+}
+
+/* Panel superior */
+.panel-superior {
+    -fx-background-color: #2e7d32;
+    -fx-padding: 12 20 12 20;
+}
+
+.label-bienvenida {
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+/* Botones generales */
+.button {
+    -fx-background-color: #2e7d32;
+    -fx-text-fill: white;
+    -fx-background-radius: 5;
+    -fx-cursor: hand;
+    -fx-padding: 6 14 6 14;
+}
+
+.button:hover {
+    -fx-background-color: #43a047;
+}
+
+/* Boton peligro (desactivar) */
+.btn-peligro {
+    -fx-background-color: #c62828;
+    -fx-text-fill: white;
+    -fx-background-radius: 5;
+    -fx-cursor: hand;
+}
+
+.btn-peligro:hover {
+    -fx-background-color: #ef5350;
+}
+
+/* Tablas */
+.table-view {
+    -fx-background-color: white;
+    -fx-border-color: #c8e6c9;
+    -fx-border-radius: 5;
+}
+
+.table-view .column-header {
+    -fx-background-color: #2e7d32;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: #f1f8f1;
+}
+
+.table-row-cell:even {
+    -fx-background-color: white;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #a5d6a7;
+    -fx-text-fill: #1b5e20;
+}
+
+/* Campos de texto */
+.text-field, .password-field, .text-area {
+    -fx-background-color: white;
+    -fx-border-color: #a5d6a7;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 5 8 5 8;
+}
+
+.text-field:focused, .password-field:focused {
+    -fx-border-color: #2e7d32;
+}
+
+/* ComboBox */
+.combo-box {
+    -fx-border-color: #a5d6a7;
+    -fx-background-radius: 4;
+    -fx-border-radius: 4;
+}
+
+/* Labels titulo */
+.label-titulo {
+    -fx-text-fill: #1b5e20;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+/* Panel contenido */
+.panel-contenido {
+    -fx-background-color: #f5f9f5;
+    -fx-padding: 15;
+}

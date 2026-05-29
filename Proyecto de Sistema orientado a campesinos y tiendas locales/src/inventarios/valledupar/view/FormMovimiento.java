@@ -3,116 +3,115 @@ package inventarios.valledupar.view;
 import inventarios.valledupar.model.Movimiento;
 import inventarios.valledupar.model.Producto;
 import inventarios.valledupar.service.InventarioService;
-import javax.swing.*;
-import java.awt.*;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import java.sql.Date;
 import java.util.List;
 
-public class FormMovimiento extends JDialog {
+public class FormMovimiento {
 
-    private JComboBox<String> cmbProducto;
-    private JTextField txtCantidad;
-    private JTextField txtObservacion;
-    private JComboBox<String> cmbTipo;
-    private JButton btnGuardar;
-    private JButton btnCancelar;
-    private InventarioService inventarioService;
     private int idUsuario;
+    private Runnable onGuardar;
+    private InventarioService inventarioService;
     private List<Producto> productosActivos;
 
-    public FormMovimiento(JFrame parent, int idUsuario) {
-        super(parent, "Registrar Movimiento", true);
+    public FormMovimiento(int idUsuario, Runnable onGuardar) {
         this.idUsuario = idUsuario;
-        inventarioService = new InventarioService();
-        initComponents();
+        this.onGuardar = onGuardar;
+        this.inventarioService = new InventarioService();
     }
 
-    private void initComponents() {
-        setSize(400, 320);
-        setLocationRelativeTo(null);
-        setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(8, 10, 8, 10);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+    public void mostrar() {
+        Stage stage = new Stage();
+        stage.setTitle("Registrar Movimiento");
+        stage.initModality(Modality.APPLICATION_MODAL);
 
-        gbc.gridx = 0; gbc.gridy = 0;
-        add(new JLabel("Producto:"), gbc);
         productosActivos = inventarioService.listarProductos();
-        cmbProducto = new JComboBox<>();
+        ComboBox<String> cmbProducto = new ComboBox<>();
         for (Producto p : productosActivos) {
-            cmbProducto.addItem(p.getIdProducto() + " - " + p.getNombreProducto());
+            cmbProducto.getItems().add(p.getIdProducto() + " - " + p.getNombreProducto());
         }
-        gbc.gridx = 1;
-        add(cmbProducto, gbc);
+        cmbProducto.setPrefWidth(220);
 
-        gbc.gridx = 0; gbc.gridy = 1;
-        add(new JLabel("Tipo:"), gbc);
-        cmbTipo = new JComboBox<>(new String[]{"entrada", "salida", "ajuste"});
-        gbc.gridx = 1;
-        add(cmbTipo, gbc);
+        ComboBox<String> cmbTipo = new ComboBox<>();
+        cmbTipo.getItems().addAll("entrada", "salida", "ajuste");
+        cmbTipo.setValue("entrada");
+        cmbTipo.setPrefWidth(220);
 
-        gbc.gridx = 0; gbc.gridy = 2;
-        add(new JLabel("Cantidad:"), gbc);
-        txtCantidad = new JTextField(20);
-        gbc.gridx = 1;
-        add(txtCantidad, gbc);
+        TextField txtCantidad    = new TextField();
+        TextField txtObservacion = new TextField();
 
-        gbc.gridx = 0; gbc.gridy = 3;
-        add(new JLabel("Observacion:"), gbc);
-        txtObservacion = new JTextField(20);
-        gbc.gridx = 1;
-        add(txtObservacion, gbc);
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(15));
+        grid.add(new Label("Producto:"),    0, 0); grid.add(cmbProducto,    1, 0);
+        grid.add(new Label("Tipo:"),        0, 1); grid.add(cmbTipo,        1, 1);
+        grid.add(new Label("Cantidad:"),    0, 2); grid.add(txtCantidad,    1, 2);
+        grid.add(new Label("Observacion:"), 0, 3); grid.add(txtObservacion, 1, 3);
 
-        JPanel panelBotones = new JPanel(new FlowLayout());
-        btnGuardar = new JButton("Guardar");
-        btnCancelar = new JButton("Cancelar");
-        panelBotones.add(btnGuardar);
-        panelBotones.add(btnCancelar);
-        gbc.gridx = 0; gbc.gridy = 4; gbc.gridwidth = 2;
-        add(panelBotones, gbc);
+        Button btnGuardar  = new Button("Guardar");
+        Button btnCancelar = new Button("Cancelar");
+        btnGuardar.setPrefWidth(100);
+        btnCancelar.setPrefWidth(100);
+        HBox botones = new HBox(10, btnGuardar, btnCancelar);
+        botones.setAlignment(Pos.CENTER);
+        botones.setPadding(new Insets(10));
 
-        btnCancelar.addActionListener(e -> dispose());
-        btnGuardar.addActionListener(e -> guardar());
+        btnCancelar.setOnAction(e -> stage.close());
+
+        btnGuardar.setOnAction(e -> {
+            try {
+                int index = cmbProducto.getSelectionModel().getSelectedIndex();
+                if (index == -1) {
+                    mostrarAlerta("Selecciona un producto.");
+                    return;
+                }
+
+                int idProducto = productosActivos.get(index).getIdProducto();
+                Producto producto = inventarioService.buscarProducto(idProducto);
+
+                int cantidad = Integer.parseInt(txtCantidad.getText().trim());
+                String tipo = cmbTipo.getValue();
+                String observacion = txtObservacion.getText().trim();
+
+                if ("salida".equalsIgnoreCase(tipo) && cantidad > producto.getStockActual()) {
+                    mostrarAlerta("Stock insuficiente. Stock actual: " + producto.getStockActual());
+                    return;
+                }
+
+                Movimiento movimiento = new Movimiento();
+                movimiento.setIdProducto(producto.getIdProducto());
+                movimiento.setIdUsuario(idUsuario);
+                movimiento.setTipoMovimiento(tipo);
+                movimiento.setCantidad(cantidad);
+                movimiento.setObservacion(observacion);
+                movimiento.setFechaMovimiento(new Date(System.currentTimeMillis()));
+
+                inventarioService.registrarMovimiento(movimiento, producto);
+                if (onGuardar != null) onGuardar.run();
+                stage.close();
+
+            } catch (NumberFormatException ex) {
+                mostrarAlerta("Verifica que la cantidad sea un numero.");
+            }
+        });
+
+        VBox root = new VBox(grid, botones);
+        stage.setScene(new Scene(root, 400, 300));
+        stage.setResizable(false);
+        stage.show();
     }
 
-    private void guardar() {
-        try {
-            int indexSeleccionado = cmbProducto.getSelectedIndex();
-            if (indexSeleccionado == -1) {
-                JOptionPane.showMessageDialog(this, "Selecciona un producto.");
-                return;
-            }
-
-            // recargar producto desde BD para tener el stock real y actualizado
-            int idProducto = productosActivos.get(indexSeleccionado).getIdProducto();
-            Producto producto = inventarioService.buscarProducto(idProducto);
-
-            int cantidad = Integer.parseInt(txtCantidad.getText().trim());
-            String tipo = (String) cmbTipo.getSelectedItem();
-            String observacion = txtObservacion.getText().trim();
-
-            // validar stock suficiente antes de registrar una salida
-            if ("salida".equalsIgnoreCase(tipo) && cantidad > producto.getStockActual()) {
-                JOptionPane.showMessageDialog(this,
-                    "Stock insuficiente. Stock actual: " + producto.getStockActual());
-                return;
-            }
-
-            Movimiento movimiento = new Movimiento();
-            movimiento.setIdProducto(producto.getIdProducto());
-            movimiento.setIdUsuario(idUsuario);
-            movimiento.setTipoMovimiento(tipo);
-            movimiento.setCantidad(cantidad);
-            movimiento.setObservacion(observacion);
-            // CORRECCIÓN: fecha como java.sql.Date, sin formato de texto
-            movimiento.setFechaMovimiento(new Date(System.currentTimeMillis()));
-
-            inventarioService.registrarMovimiento(movimiento, producto);
-            JOptionPane.showMessageDialog(this, "Movimiento registrado correctamente.");
-            dispose();
-
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Verifica que la cantidad sea un numero.");
-        }
+    private void mostrarAlerta(String mensaje) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
     }
 }

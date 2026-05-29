@@ -2,152 +2,142 @@ package inventarios.valledupar.view;
 
 import inventarios.valledupar.model.Producto;
 import inventarios.valledupar.service.InventarioService;
-import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
-import java.awt.*;
+import javafx.collections.FXCollections;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.*;
+import javafx.stage.Stage;
 import java.util.List;
 
-public class VentanaProductos extends JFrame {
+public class VentanaProductos {
 
-    private JTable tablaProductos;
-    private DefaultTableModel modeloTabla;
-    private JButton btnNuevo;
-    private JButton btnEditar;
-    private JButton btnDesactivar;
-    private JButton btnActivar;
-    private JButton btnActualizar;
-    private JTextField txtBuscar;
     private InventarioService inventarioService;
+    private TableView<Producto> tabla;
 
     public VentanaProductos() {
         inventarioService = new InventarioService();
-        initComponents();
-        cargarProductos();
     }
 
-    private void initComponents() {
-        setTitle("Gestion de Productos");
-        setSize(700, 450);
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLayout(new BorderLayout());
+    public void mostrarEnPanel(StackPane panel) {
+        tabla = new TableView<>();
+        tabla.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-        JPanel panelSuperior = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panelSuperior.add(new JLabel("Buscar:"));
-        txtBuscar = new JTextField(15);
-        panelSuperior.add(txtBuscar);
-        btnNuevo = new JButton("+ Nuevo");
-        btnEditar = new JButton("Editar");
-        btnDesactivar = new JButton("Desactivar");
-        btnActivar = new JButton("Activar");
-        btnActualizar = new JButton("Actualizar");
-        panelSuperior.add(btnNuevo);
-        panelSuperior.add(btnEditar);
-        panelSuperior.add(btnDesactivar);
-        panelSuperior.add(btnActivar);
-        panelSuperior.add(btnActualizar);
-        add(panelSuperior, BorderLayout.NORTH);
+        TableColumn<Producto, Integer> colId = new TableColumn<>("ID");
+        colId.setCellValueFactory(new PropertyValueFactory<>("idProducto"));
 
-        String[] columnas = {"ID", "Nombre", "Categoria", "Stock", "Precio Venta", "Estado"};
-        modeloTabla = new DefaultTableModel(columnas, 0) {
+        TableColumn<Producto, String> colNombre = new TableColumn<>("Nombre");
+        colNombre.setCellValueFactory(new PropertyValueFactory<>("nombreProducto"));
+
+        TableColumn<Producto, Integer> colCategoria = new TableColumn<>("Categoria");
+        colCategoria.setCellValueFactory(new PropertyValueFactory<>("idCategoria"));
+
+        TableColumn<Producto, Integer> colStock = new TableColumn<>("Stock");
+        colStock.setCellValueFactory(new PropertyValueFactory<>("stockActual"));
+
+        TableColumn<Producto, Double> colPrecio = new TableColumn<>("Precio Venta");
+        colPrecio.setCellValueFactory(new PropertyValueFactory<>("precioVenta"));
+
+        TableColumn<Producto, String> colEstado = new TableColumn<>("Estado");
+        colEstado.setCellValueFactory(new PropertyValueFactory<>("estado"));
+
+        // Color por estado
+        colEstado.setCellFactory(col -> new TableCell<>() {
             @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
+            protected void updateItem(String estado, boolean empty) {
+                super.updateItem(estado, empty);
+                if (empty || estado == null) {
+                    setText(null);
+                    setStyle("");
+                } else {
+                    setText(estado);
+                    if ("inactivo".equalsIgnoreCase(estado)) {
+                        setStyle("-fx-background-color: #ffb3b3;");
+                    } else {
+                        setStyle("-fx-background-color: #b3ffb3;");
+                    }
+                }
             }
-        };
-        tablaProductos = new JTable(modeloTabla);
-        tablaProductos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        add(new JScrollPane(tablaProductos), BorderLayout.CENTER);
-
-        btnActualizar.addActionListener(e -> cargarProductos());
-
-        btnNuevo.addActionListener(e -> {
-            new FormProducto(this, null).setVisible(true);
-            cargarProductos();
         });
 
-        btnEditar.addActionListener(e -> {
-            int fila = tablaProductos.getSelectedRow();
-            if (fila == -1) {
-                JOptionPane.showMessageDialog(this, "Selecciona un producto primero.");
-                return;
-            }
-            int id = (int) modeloTabla.getValueAt(fila, 0);
-            Producto p = inventarioService.buscarProducto(id);
-            new FormProducto(this, p).setVisible(true);
-            cargarProductos();
+        tabla.getColumns().addAll(colId, colNombre, colCategoria, colStock, colPrecio, colEstado);
+
+        // Barra superior
+        Label lblBuscar = new Label("Buscar:");
+        TextField txtBuscar = new TextField();
+        txtBuscar.setPrefWidth(150);
+        Button btnNuevo      = new Button("+ Nuevo");
+        Button btnEditar     = new Button("Editar");
+        Button btnDesactivar = new Button("Desactivar");
+        Button btnActivar    = new Button("Activar");
+        Button btnActualizar = new Button("Actualizar");
+
+        HBox barraTop = new HBox(8, lblBuscar, txtBuscar, btnNuevo, btnEditar, btnDesactivar, btnActivar, btnActualizar);
+        barraTop.setPadding(new Insets(8));
+        barraTop.setAlignment(Pos.CENTER_LEFT);
+
+        VBox root = new VBox(barraTop, tabla);
+        VBox.setVgrow(tabla, Priority.ALWAYS);
+        panel.getChildren().add(root);
+
+        cargarProductos();
+
+        // Acciones
+        btnActualizar.setOnAction(e -> cargarProductos());
+
+        btnNuevo.setOnAction(e -> {
+            new FormProducto(null, () -> cargarProductos()).mostrar();
         });
 
-        btnDesactivar.addActionListener(e -> {
-            int fila = tablaProductos.getSelectedRow();
-            if (fila == -1) {
-                JOptionPane.showMessageDialog(this, "Selecciona un producto primero.");
+        btnEditar.setOnAction(e -> {
+            Producto seleccionado = tabla.getSelectionModel().getSelectedItem();
+            if (seleccionado == null) {
+                mostrarAlerta("Selecciona un producto primero.");
                 return;
             }
-            int confirmar = JOptionPane.showConfirmDialog(this,
-                    "¿Desactivar este producto?", "Confirmar",
-                    JOptionPane.YES_NO_OPTION);
-            if (confirmar == JOptionPane.YES_OPTION) {
-                int id = (int) modeloTabla.getValueAt(fila, 0);
-                Producto p = inventarioService.buscarProducto(id);
-                p.setEstado("inactivo");
-                inventarioService.actualizarProducto(p);
+            new FormProducto(seleccionado, () -> cargarProductos()).mostrar();
+        });
+
+        btnDesactivar.setOnAction(e -> {
+            Producto seleccionado = tabla.getSelectionModel().getSelectedItem();
+            if (seleccionado == null) { mostrarAlerta("Selecciona un producto primero."); return; }
+            confirmar("¿Desactivar este producto?", () -> {
+                seleccionado.setEstado("inactivo");
+                inventarioService.actualizarProducto(seleccionado);
                 cargarProductos();
-                JOptionPane.showMessageDialog(this, "Producto desactivado.");
-            }
+            });
         });
 
-        btnActivar.addActionListener(e -> {
-            int fila = tablaProductos.getSelectedRow();
-            if (fila == -1) {
-                JOptionPane.showMessageDialog(this, "Selecciona un producto primero.");
-                return;
-            }
-            int confirmar = JOptionPane.showConfirmDialog(this,
-                    "¿Activar este producto?", "Confirmar",
-                    JOptionPane.YES_NO_OPTION);
-            if (confirmar == JOptionPane.YES_OPTION) {
-                int id = (int) modeloTabla.getValueAt(fila, 0);
-                Producto p = inventarioService.buscarProducto(id);
-                p.setEstado("activo");
-                inventarioService.actualizarProducto(p);
+        btnActivar.setOnAction(e -> {
+            Producto seleccionado = tabla.getSelectionModel().getSelectedItem();
+            if (seleccionado == null) { mostrarAlerta("Selecciona un producto primero."); return; }
+            confirmar("¿Activar este producto?", () -> {
+                seleccionado.setEstado("activo");
+                inventarioService.actualizarProducto(seleccionado);
                 cargarProductos();
-                JOptionPane.showMessageDialog(this, "Producto activado.");
-            }
+            });
         });
     }
 
     private void cargarProductos() {
-        modeloTabla.setRowCount(0);
         List<Producto> productos = inventarioService.listarProductos();
-        for (Producto p : productos) {
-            modeloTabla.addRow(new Object[]{
-                p.getIdProducto(),
-                p.getNombreProducto(),
-                p.getIdCategoria(),
-                p.getStockActual(),
-                p.getPrecioVenta(),
-                p.getEstado()
-            });
-        }
+        tabla.setItems(FXCollections.observableArrayList(productos));
+    }
 
-        tablaProductos.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
-            @Override
-            public Component getTableCellRendererComponent(JTable table, Object value,
-                    boolean isSelected, boolean hasFocus, int row, int column) {
-                super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                String estado = (String) table.getValueAt(row, 5);
-                if ("inactivo".equalsIgnoreCase(estado)) {
-                    setBackground(new Color(255, 180, 180));
-                } else {
-                    setBackground(new Color(180, 255, 180));
-                }
-                if (isSelected) {
-                    setBackground(table.getSelectionBackground());
-                }
-                return this;
-            }
+    private void mostrarAlerta(String mensaje) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
+    }
+
+    private void confirmar(String mensaje, Runnable accion) {
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setHeaderText(null);
+        confirm.setContentText(mensaje);
+        confirm.showAndWait().ifPresent(r -> {
+            if (r == ButtonType.OK) accion.run();
         });
     }
 }

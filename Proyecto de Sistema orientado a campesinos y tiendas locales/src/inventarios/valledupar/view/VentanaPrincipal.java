@@ -1,100 +1,104 @@
 package inventarios.valledupar.view;
 
 import inventarios.valledupar.model.Usuario;
-import javax.swing.*;
-import java.awt.*;
+import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.stage.Stage;
 
-public class VentanaPrincipal extends JFrame {
+public class VentanaPrincipal extends Application {
 
     private Usuario usuarioActivo;
-    private JPanel panelMenu;
-    private JPanel panelContenido;
-    private JLabel lblBienvenida;
-    private JButton btnProductos;
-    private JButton btnMovimientos;
-    private JButton btnAlertas;
-    private JButton btnReportes;
-    private JButton btnSalir;
-    private CardLayout cardLayout;
 
     public VentanaPrincipal(Usuario usuarioActivo) {
         this.usuarioActivo = usuarioActivo;
-        initComponents();
     }
 
-    private void initComponents() {
-        setTitle("Sistema de Inventarios - Valledupar");
-        setSize(950, 600);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-        setLayout(new BorderLayout());
+    @Override
+    public void start(Stage stage) {
 
         // Panel superior
-        JPanel panelSuperior = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        lblBienvenida = new JLabel("Usuario: " + usuarioActivo.getNombre()
+        Label lblBienvenida = new Label("Usuario: " + usuarioActivo.getNombre()
                 + "  |  Rol: " + usuarioActivo.getRol());
-        lblBienvenida.setFont(new Font("Arial", Font.BOLD, 13));
-        panelSuperior.add(lblBienvenida);
-        add(panelSuperior, BorderLayout.NORTH);
+        lblBienvenida.setFont(Font.font("Arial", FontWeight.BOLD, 13));
+        HBox panelSuperior = new HBox(lblBienvenida);
+        panelSuperior.setPadding(new Insets(10, 15, 10, 15));
+        panelSuperior.setStyle("-fx-background-color: #f0f0f0; -fx-border-color: #cccccc; -fx-border-width: 0 0 1 0;");
 
-        // Panel menu lateral
-        panelMenu = new JPanel();
-        panelMenu.setLayout(new GridLayout(6, 1, 5, 5));
-        panelMenu.setPreferredSize(new Dimension(160, 0));
-        panelMenu.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        // Panel contenido central
+        StackPane panelContenido = new StackPane();
+        Label lblInicio = new Label("Selecciona un modulo del menu lateral.");
+        lblInicio.setFont(Font.font("Arial", 13));
+        panelContenido.getChildren().add(lblInicio);
 
-        btnProductos   = new JButton("Productos");
-        btnMovimientos = new JButton("Movimientos");
-        btnAlertas     = new JButton("Alertas");
-        btnReportes    = new JButton("Reportes");
-        btnSalir       = new JButton("Cerrar sesion");
+        // Botones del menu lateral
+        Button btnProductos   = crearBotonMenu("Productos");
+        Button btnMovimientos = crearBotonMenu("Movimientos");
+        Button btnAlertas     = crearBotonMenu("Alertas");
+        Button btnReportes    = crearBotonMenu("Reportes");
+        Button btnSalir       = crearBotonMenu("Cerrar sesion");
 
-        panelMenu.add(btnProductos);
-        panelMenu.add(btnMovimientos);
-        panelMenu.add(btnAlertas);
-        panelMenu.add(btnReportes);
-        panelMenu.add(btnSalir);
-        add(panelMenu, BorderLayout.WEST);
+        VBox panelMenu = new VBox(8);
+        panelMenu.setPadding(new Insets(10));
+        panelMenu.setPrefWidth(160);
+        panelMenu.setStyle("-fx-background-color: #e8e8e8;");
+        panelMenu.getChildren().addAll(btnProductos, btnMovimientos, btnAlertas, btnReportes, btnSalir);
 
-        // Panel contenido con CardLayout
-        cardLayout = new CardLayout();
-        panelContenido = new JPanel(cardLayout);
-
-        JLabel lblInicio = new JLabel("Selecciona un modulo del menu lateral.", SwingConstants.CENTER);
-        lblInicio.setFont(new Font("Arial", Font.PLAIN, 13));
-        panelContenido.add(lblInicio, "inicio");
-
-        VentanaProductos panelProductos = new VentanaProductos();
-        panelProductos.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        panelContenido.add(panelProductos.getContentPane(), "productos");
-
-        VentanaMovimientos panelMovimientos = new VentanaMovimientos(usuarioActivo);
-        panelMovimientos.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        panelContenido.add(panelMovimientos.getContentPane(), "movimientos");
-
-        VentanaAlertas panelAlertas = new VentanaAlertas();
-        panelAlertas.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        panelContenido.add(panelAlertas.getContentPane(), "alertas");
-
-        VentanaReportes panelReportes = new VentanaReportes(usuarioActivo);
-        panelReportes.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        panelContenido.add(panelReportes.getContentPane(), "reportes");
-
-        add(panelContenido, BorderLayout.CENTER);
-
-        // Acciones botones
-        btnProductos.addActionListener(e -> cardLayout.show(panelContenido, "productos"));
-        btnMovimientos.addActionListener(e -> cardLayout.show(panelContenido, "movimientos"));
-        btnAlertas.addActionListener(e -> cardLayout.show(panelContenido, "alertas"));
-        btnReportes.addActionListener(e -> cardLayout.show(panelContenido, "reportes"));
-        btnSalir.addActionListener(e -> {
-            int confirmar = JOptionPane.showConfirmDialog(this,
-                    "¿Deseas cerrar sesion?", "Salir",
-                    JOptionPane.YES_NO_OPTION);
-            if (confirmar == JOptionPane.YES_OPTION) {
-                new VentanaLogin().setVisible(true);
-                this.dispose();
-            }
+        // Acciones de botones
+        btnProductos.setOnAction(e -> {
+            panelContenido.getChildren().clear();
+            new VentanaProductos().mostrarEnPanel(panelContenido);
         });
+
+        btnMovimientos.setOnAction(e -> {
+            panelContenido.getChildren().clear();
+            new VentanaMovimientos(usuarioActivo).mostrarEnPanel(panelContenido);
+        });
+
+        btnAlertas.setOnAction(e -> {
+            panelContenido.getChildren().clear();
+            new VentanaAlertas().mostrarEnPanel(panelContenido);
+        });
+
+        btnReportes.setOnAction(e -> {
+            panelContenido.getChildren().clear();
+            new VentanaReportes(usuarioActivo).mostrarEnPanel(panelContenido);
+        });
+
+        btnSalir.setOnAction(e -> {
+            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+            confirm.setTitle("Cerrar sesion");
+            confirm.setHeaderText(null);
+            confirm.setContentText("¿Deseas cerrar sesion?");
+            confirm.showAndWait().ifPresent(respuesta -> {
+                if (respuesta == ButtonType.OK) {
+                    new VentanaLogin().start(new Stage());
+                    stage.close();
+                }
+            });
+        });
+
+        // Layout principal
+        BorderPane root = new BorderPane();
+        root.setTop(panelSuperior);
+        root.setLeft(panelMenu);
+        root.setCenter(panelContenido);
+
+        Scene scene = new Scene(root, 950, 600);
+        stage.setTitle("Sistema de Inventarios - Valledupar");
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    private Button crearBotonMenu(String texto) {
+        Button btn = new Button(texto);
+        btn.setPrefWidth(140);
+        btn.setPrefHeight(35);
+        return btn;
     }
 }

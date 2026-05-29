@@ -2,103 +2,96 @@ package inventarios.valledupar.view;
 
 import inventarios.valledupar.model.Alerta;
 import inventarios.valledupar.service.AlertaService;
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.awt.*;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
 import java.util.List;
 
-public class VentanaAlertas extends JFrame {
+public class VentanaAlertas {
 
-    private JTable tablaAlertas;
-    private DefaultTableModel modeloTabla;
-    private JButton btnAtender;
-    private JButton btnActualizar;
-    private JRadioButton rbPendientes;
-    private JRadioButton rbTodas;
     private AlertaService alertaService;
+    private TableView<Alerta> tabla;
 
     public VentanaAlertas() {
         alertaService = new AlertaService();
-        initComponents();
-        cargarAlertas();
     }
 
-    private void initComponents() {
-        setTitle("Alertas de Stock");
-        setSize(650, 420);
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLayout(new BorderLayout());
+    public void mostrarEnPanel(StackPane panel) {
+        tabla = new TableView<>();
+        tabla.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-        // Panel superior
-        JPanel panelSuperior = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        rbPendientes = new JRadioButton("Pendientes", true);
-        rbTodas = new JRadioButton("Todas");
-        ButtonGroup grupo = new ButtonGroup();
-        grupo.add(rbPendientes);
-        grupo.add(rbTodas);
-        btnAtender = new JButton("Marcar atendida");
-        btnActualizar = new JButton("Actualizar");
-        panelSuperior.add(rbPendientes);
-        panelSuperior.add(rbTodas);
-        panelSuperior.add(btnAtender);
-        panelSuperior.add(btnActualizar);
-        add(panelSuperior, BorderLayout.NORTH);
+        TableColumn<Alerta, Integer> colId = new TableColumn<>("ID");
+        colId.setCellValueFactory(d -> new SimpleIntegerProperty(d.getValue().getIdAlerta()).asObject());
 
-        // Tabla
-        String[] columnas = {"ID", "Producto", "Stock al momento", "Fecha", "Estado"};
-        modeloTabla = new DefaultTableModel(columnas, 0) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
-        tablaAlertas = new JTable(modeloTabla);
-        tablaAlertas.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        add(new JScrollPane(tablaAlertas), BorderLayout.CENTER);
+        TableColumn<Alerta, Integer> colProducto = new TableColumn<>("Producto");
+        colProducto.setCellValueFactory(d -> new SimpleIntegerProperty(d.getValue().getIdProducto()).asObject());
+
+        TableColumn<Alerta, Integer> colStock = new TableColumn<>("Stock al momento");
+        colStock.setCellValueFactory(d -> new SimpleIntegerProperty(d.getValue().getStockAlMomento()).asObject());
+
+        TableColumn<Alerta, String> colFecha = new TableColumn<>("Fecha");
+        colFecha.setCellValueFactory(d -> new SimpleStringProperty(
+                d.getValue().getFechaAlerta() != null ? d.getValue().getFechaAlerta().toString() : ""));
+
+        TableColumn<Alerta, String> colEstado = new TableColumn<>("Estado");
+        colEstado.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().getEstadoAlerta()));
+
+        tabla.getColumns().addAll(colId, colProducto, colStock, colFecha, colEstado);
+
+        // Barra superior
+        RadioButton rbPendientes = new RadioButton("Pendientes");
+        RadioButton rbTodas      = new RadioButton("Todas");
+        rbPendientes.setSelected(true);
+        ToggleGroup grupo = new ToggleGroup();
+        rbPendientes.setToggleGroup(grupo);
+        rbTodas.setToggleGroup(grupo);
+
+        Button btnAtender    = new Button("Marcar atendida");
+        Button btnActualizar = new Button("Actualizar");
+
+        HBox barraTop = new HBox(10, rbPendientes, rbTodas, btnAtender, btnActualizar);
+        barraTop.setPadding(new Insets(8));
+        barraTop.setAlignment(Pos.CENTER_LEFT);
+
+        VBox root = new VBox(barraTop, tabla);
+        VBox.setVgrow(tabla, Priority.ALWAYS);
+        panel.getChildren().add(root);
+
+        cargarPendientes();
 
         // Acciones
-        btnActualizar.addActionListener(e -> cargarAlertas());
-        rbPendientes.addActionListener(e -> cargarAlertas());
-        rbTodas.addActionListener(e -> cargarTodasLasAlertas());
-        btnAtender.addActionListener(e -> {
-            int fila = tablaAlertas.getSelectedRow();
-            if (fila == -1) {
-                JOptionPane.showMessageDialog(this, "Selecciona una alerta primero.");
+        btnActualizar.setOnAction(e -> {
+            if (rbPendientes.isSelected()) cargarPendientes();
+            else cargarTodas();
+        });
+
+        rbPendientes.setOnAction(e -> cargarPendientes());
+        rbTodas.setOnAction(e -> cargarTodas());
+
+        btnAtender.setOnAction(e -> {
+            Alerta seleccionada = tabla.getSelectionModel().getSelectedItem();
+            if (seleccionada == null) {
+                new Alert(Alert.AlertType.WARNING, "Selecciona una alerta primero.").showAndWait();
                 return;
             }
-            int id = (int) modeloTabla.getValueAt(fila, 0);
-            alertaService.atenderAlerta(id);
-            JOptionPane.showMessageDialog(this, "Alerta marcada como atendida.");
-            cargarAlertas();
+            alertaService.atenderAlerta(seleccionada.getIdAlerta());
+            new Alert(Alert.AlertType.INFORMATION, "Alerta marcada como atendida.").showAndWait();
+            if (rbPendientes.isSelected()) cargarPendientes();
+            else cargarTodas();
         });
     }
 
-    private void cargarAlertas() {
-        modeloTabla.setRowCount(0);
+    private void cargarPendientes() {
         List<Alerta> alertas = alertaService.listarAlertasPendientes();
-        for (Alerta a : alertas) {
-            modeloTabla.addRow(new Object[]{
-                a.getIdAlerta(),
-                a.getIdProducto(),
-                a.getStockAlMomento(),
-                a.getFechaAlerta(),
-                a.getEstadoAlerta()
-            });
-        }
+        tabla.setItems(FXCollections.observableArrayList(alertas));
     }
 
-    private void cargarTodasLasAlertas() {
-        modeloTabla.setRowCount(0);
+    private void cargarTodas() {
         List<Alerta> alertas = alertaService.listarTodasLasAlertas();
-        for (Alerta a : alertas) {
-            modeloTabla.addRow(new Object[]{
-                a.getIdAlerta(),
-                a.getIdProducto(),
-                a.getStockAlMomento(),
-                a.getFechaAlerta(),
-                a.getEstadoAlerta()
-            });
-        }
+        tabla.setItems(FXCollections.observableArrayList(alertas));
     }
 }

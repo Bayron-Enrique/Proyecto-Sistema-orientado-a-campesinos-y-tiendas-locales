@@ -4,114 +4,98 @@ import inventarios.valledupar.model.Movimiento;
 import inventarios.valledupar.model.Producto;
 import inventarios.valledupar.model.Usuario;
 import inventarios.valledupar.service.InventarioService;
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.awt.*;
+import javafx.collections.FXCollections;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
 import java.util.List;
 
-public class VentanaMovimientos extends JFrame {
+public class VentanaMovimientos {
 
-    private JTable tablaMovimientos;
-    private DefaultTableModel modeloTabla;
-    private JButton btnRegistrar;
-    private JButton btnActualizar;
-    private JTextField txtFechaInicio;
-    private JTextField txtFechaFin;
-    private JButton btnFiltrar;
     private InventarioService inventarioService;
     private Usuario usuarioActivo;
+    private TableView<Movimiento> tabla;
 
     public VentanaMovimientos(Usuario usuarioActivo) {
         this.usuarioActivo = usuarioActivo;
         inventarioService = new InventarioService();
-        initComponents();
-        cargarMovimientos();
     }
 
-    private void initComponents() {
-        setTitle("Movimientos de Inventario");
-        setSize(750, 450);
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLayout(new BorderLayout());
+    public void mostrarEnPanel(StackPane panel) {
+        tabla = new TableView<>();
+        tabla.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-        JPanel panelSuperior = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panelSuperior.add(new JLabel("Desde:"));
-        txtFechaInicio = new JTextField(10);
-        panelSuperior.add(txtFechaInicio);
-        panelSuperior.add(new JLabel("Hasta:"));
-        txtFechaFin = new JTextField(10);
-        panelSuperior.add(txtFechaFin);
-        btnFiltrar = new JButton("Filtrar");
-        btnRegistrar = new JButton("+ Registrar");
-        btnActualizar = new JButton("Actualizar");
-        panelSuperior.add(btnFiltrar);
-        panelSuperior.add(btnRegistrar);
-        panelSuperior.add(btnActualizar);
-        add(panelSuperior, BorderLayout.NORTH);
+        TableColumn<Movimiento, Integer> colId = new TableColumn<>("ID");
+        colId.setCellValueFactory(d -> new javafx.beans.property.SimpleIntegerProperty(d.getValue().getIdMovimiento()).asObject());
 
-        String[] columnas = {"ID", "Producto", "Usuario", "Tipo", "Cantidad", "Fecha", "Stock Resultante"};
-        modeloTabla = new DefaultTableModel(columnas, 0) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
-        tablaMovimientos = new JTable(modeloTabla);
-        tablaMovimientos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        add(new JScrollPane(tablaMovimientos), BorderLayout.CENTER);
-
-        btnActualizar.addActionListener(e -> cargarMovimientos());
-
-        btnRegistrar.addActionListener(e -> {
-            new FormMovimiento(this, usuarioActivo.getIdUsuario()).setVisible(true);
-            cargarMovimientos();
+        TableColumn<Movimiento, String> colProducto = new TableColumn<>("Producto");
+        colProducto.setCellValueFactory(d -> {
+            Producto p = inventarioService.buscarProducto(d.getValue().getIdProducto());
+            String nombre = p != null ? p.getNombreProducto() : "ID: " + d.getValue().getIdProducto();
+            return new javafx.beans.property.SimpleStringProperty(nombre);
         });
 
-        btnFiltrar.addActionListener(e -> {
-            String inicio = txtFechaInicio.getText().trim();
-            String fin = txtFechaFin.getText().trim();
+        TableColumn<Movimiento, Integer> colUsuario = new TableColumn<>("Usuario");
+        colUsuario.setCellValueFactory(d -> new javafx.beans.property.SimpleIntegerProperty(d.getValue().getIdUsuario()).asObject());
+
+        TableColumn<Movimiento, String> colTipo = new TableColumn<>("Tipo");
+        colTipo.setCellValueFactory(d -> new javafx.beans.property.SimpleStringProperty(d.getValue().getTipoMovimiento()));
+
+        TableColumn<Movimiento, Integer> colCantidad = new TableColumn<>("Cantidad");
+        colCantidad.setCellValueFactory(d -> new javafx.beans.property.SimpleIntegerProperty(d.getValue().getCantidad()).asObject());
+
+        TableColumn<Movimiento, String> colFecha = new TableColumn<>("Fecha");
+        colFecha.setCellValueFactory(d -> new javafx.beans.property.SimpleStringProperty(
+                d.getValue().getFechaMovimiento() != null ? d.getValue().getFechaMovimiento().toString() : ""));
+
+        TableColumn<Movimiento, Integer> colStock = new TableColumn<>("Stock Resultante");
+        colStock.setCellValueFactory(d -> new javafx.beans.property.SimpleIntegerProperty(d.getValue().getStockResultante()).asObject());
+
+        tabla.getColumns().addAll(colId, colProducto, colUsuario, colTipo, colCantidad, colFecha, colStock);
+
+        // Barra superior
+        Label lblDesde = new Label("Desde:");
+        TextField txtDesde = new TextField();
+        txtDesde.setPrefWidth(100);
+        Label lblHasta = new Label("Hasta:");
+        TextField txtHasta = new TextField();
+        txtHasta.setPrefWidth(100);
+        Button btnFiltrar    = new Button("Filtrar");
+        Button btnRegistrar  = new Button("+ Registrar");
+        Button btnActualizar = new Button("Actualizar");
+
+        HBox barraTop = new HBox(8, lblDesde, txtDesde, lblHasta, txtHasta, btnFiltrar, btnRegistrar, btnActualizar);
+        barraTop.setPadding(new Insets(8));
+        barraTop.setAlignment(Pos.CENTER_LEFT);
+
+        VBox root = new VBox(barraTop, tabla);
+        VBox.setVgrow(tabla, Priority.ALWAYS);
+        panel.getChildren().add(root);
+
+        cargarMovimientos();
+
+        // Acciones
+        btnActualizar.setOnAction(e -> cargarMovimientos());
+
+        btnRegistrar.setOnAction(e -> {
+            new FormMovimiento(usuarioActivo.getIdUsuario(), () -> cargarMovimientos()).mostrar();
+        });
+
+        btnFiltrar.setOnAction(e -> {
+            String inicio = txtDesde.getText().trim();
+            String fin    = txtHasta.getText().trim();
             if (inicio.isEmpty() || fin.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Ingresa las dos fechas para filtrar.");
+                new Alert(Alert.AlertType.WARNING, "Ingresa las dos fechas para filtrar.").showAndWait();
                 return;
             }
-            cargarMovimientosPorPeriodo(inicio, fin);
+            List<Movimiento> filtrados = inventarioService.listarMovimientosPorPeriodo(inicio, fin);
+            tabla.setItems(FXCollections.observableArrayList(filtrados));
         });
     }
 
     private void cargarMovimientos() {
-        modeloTabla.setRowCount(0);
         List<Movimiento> movimientos = inventarioService.listarMovimientos();
-        for (Movimiento m : movimientos) {
-            Producto p = inventarioService.buscarProducto(m.getIdProducto());
-            String nombreProducto = p != null ? p.getNombreProducto() : "ID: " + m.getIdProducto();
-            modeloTabla.addRow(new Object[]{
-                m.getIdMovimiento(),
-                nombreProducto,
-                m.getIdUsuario(),
-                m.getTipoMovimiento(),
-                m.getCantidad(),
-                m.getFechaMovimiento(),
-                m.getStockResultante()
-            });
-        }
-    }
-
-    private void cargarMovimientosPorPeriodo(String inicio, String fin) {
-        modeloTabla.setRowCount(0);
-        List<Movimiento> movimientos = inventarioService.listarMovimientosPorPeriodo(inicio, fin);
-        for (Movimiento m : movimientos) {
-            Producto p = inventarioService.buscarProducto(m.getIdProducto());
-            String nombreProducto = p != null ? p.getNombreProducto() : "ID: " + m.getIdProducto();
-            modeloTabla.addRow(new Object[]{
-                m.getIdMovimiento(),
-                nombreProducto,
-                m.getIdUsuario(),
-                m.getTipoMovimiento(),
-                m.getCantidad(),
-                m.getFechaMovimiento(),
-                m.getStockResultante()
-            });
-        }
+        tabla.setItems(FXCollections.observableArrayList(movimientos));
     }
 }
