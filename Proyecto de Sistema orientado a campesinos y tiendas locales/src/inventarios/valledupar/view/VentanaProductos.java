@@ -8,7 +8,6 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
-import javafx.stage.Stage;
 import java.util.List;
 
 public class VentanaProductos {
@@ -42,20 +41,18 @@ public class VentanaProductos {
         TableColumn<Producto, String> colEstado = new TableColumn<>("Estado");
         colEstado.setCellValueFactory(new PropertyValueFactory<>("estado"));
 
-        // Color por estado
         colEstado.setCellFactory(col -> new TableCell<>() {
             @Override
             protected void updateItem(String estado, boolean empty) {
                 super.updateItem(estado, empty);
                 if (empty || estado == null) {
-                    setText(null);
-                    setStyle("");
+                    setText(null); setStyle("");
                 } else {
                     setText(estado);
                     if ("inactivo".equalsIgnoreCase(estado)) {
-                        setStyle("-fx-background-color: #ffb3b3;");
+                        setStyle("-fx-background-color: #ffb3b3; -fx-text-fill: #c62828;");
                     } else {
-                        setStyle("-fx-background-color: #b3ffb3;");
+                        setStyle("-fx-background-color: #b3ffb3; -fx-text-fill: #1b5e20;");
                     }
                 }
             }
@@ -63,17 +60,22 @@ public class VentanaProductos {
 
         tabla.getColumns().addAll(colId, colNombre, colCategoria, colStock, colPrecio, colEstado);
 
-        // Barra superior
-        Label lblBuscar = new Label("Buscar:");
-        TextField txtBuscar = new TextField();
+        Label lblBuscar      = new Label("Buscar:");
+        TextField txtBuscar  = new TextField();
         txtBuscar.setPrefWidth(150);
         Button btnNuevo      = new Button("+ Nuevo");
         Button btnEditar     = new Button("Editar");
         Button btnDesactivar = new Button("Desactivar");
         Button btnActivar    = new Button("Activar");
+        Button btnEliminar   = new Button("Eliminar");
         Button btnActualizar = new Button("Actualizar");
 
-        HBox barraTop = new HBox(8, lblBuscar, txtBuscar, btnNuevo, btnEditar, btnDesactivar, btnActivar, btnActualizar);
+        btnDesactivar.getStyleClass().add("btn-peligro");
+        btnEliminar.getStyleClass().add("btn-peligro");
+        btnActivar.getStyleClass().add("btn-secundario");
+
+        HBox barraTop = new HBox(8, lblBuscar, txtBuscar, btnNuevo, btnEditar,
+                btnDesactivar, btnActivar, btnEliminar, btnActualizar);
         barraTop.setPadding(new Insets(8));
         barraTop.setAlignment(Pos.CENTER_LEFT);
 
@@ -83,19 +85,15 @@ public class VentanaProductos {
 
         cargarProductos();
 
-        // Acciones
         btnActualizar.setOnAction(e -> cargarProductos());
 
-        btnNuevo.setOnAction(e -> {
-            new FormProducto(null, () -> cargarProductos()).mostrar();
-        });
+        btnNuevo.setOnAction(e ->
+            new FormProducto(null, () -> cargarProductos()).mostrar()
+        );
 
         btnEditar.setOnAction(e -> {
             Producto seleccionado = tabla.getSelectionModel().getSelectedItem();
-            if (seleccionado == null) {
-                mostrarAlerta("Selecciona un producto primero.");
-                return;
-            }
+            if (seleccionado == null) { mostrarAlerta("Selecciona un producto primero."); return; }
             new FormProducto(seleccionado, () -> cargarProductos()).mostrar();
         });
 
@@ -117,6 +115,33 @@ public class VentanaProductos {
                 inventarioService.actualizarProducto(seleccionado);
                 cargarProductos();
             });
+        });
+
+        btnEliminar.setOnAction(e -> {
+            Producto seleccionado = tabla.getSelectionModel().getSelectedItem();
+            if (seleccionado == null) { mostrarAlerta("Selecciona un producto primero."); return; }
+            if ("activo".equalsIgnoreCase(seleccionado.getEstado())) {
+                mostrarAlerta("Desactiva el producto antes de eliminarlo.");
+                return;
+            }
+            confirmar("¿Eliminar permanentemente este producto? Esta accion no se puede deshacer.", () -> {
+                inventarioService.eliminarProducto(seleccionado.getIdProducto());
+                cargarProductos();
+            });
+        });
+
+        // Buscar en tiempo real
+        txtBuscar.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal.trim().isEmpty()) {
+                cargarProductos();
+            } else {
+                List<Producto> todos = inventarioService.listarProductos();
+                List<Producto> filtrados = todos.stream()
+                    .filter(p -> p.getNombreProducto().toLowerCase()
+                        .contains(newVal.toLowerCase()))
+                    .collect(java.util.stream.Collectors.toList());
+                tabla.setItems(FXCollections.observableArrayList(filtrados));
+            }
         });
     }
 

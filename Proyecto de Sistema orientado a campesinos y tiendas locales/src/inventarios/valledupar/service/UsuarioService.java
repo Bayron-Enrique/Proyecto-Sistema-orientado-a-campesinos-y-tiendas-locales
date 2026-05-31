@@ -13,27 +13,27 @@ public class UsuarioService {
         this.usuarioDAO = new UsuarioDAO();
     }
 
-    public void registrarUsuario(Usuario usuario) {
+    public Usuario autenticar(String correo, String contrasena) {
+        return usuarioDAO.autenticar(correo, contrasena);
+    }
+
+    public void registrar(Usuario usuario) {
         usuarioDAO.guardar(usuario);
+    }
+
+    public void actualizar(Usuario usuario) {
+        usuarioDAO.actualizar(usuario);
+    }
+
+    public void eliminar(int idUsuario) {
+        usuarioDAO.eliminar(idUsuario);
     }
 
     public Usuario buscarPorId(int idUsuario) {
         return usuarioDAO.buscarPorId(idUsuario);
     }
 
-    public List<Usuario> listarUsuarios() {
+    public List<Usuario> listarTodos() {
         return usuarioDAO.buscarTodos();
-    }
-
-    public void actualizarUsuario(Usuario usuario) {
-        usuarioDAO.actualizar(usuario);
-    }
-
-    public void eliminarUsuario(int idUsuario) {
-        usuarioDAO.eliminar(idUsuario);
-    }
-
-    public Usuario autenticar(String correo, String contrasena) {
-        return usuarioDAO.autenticar(correo, contrasena);
     }
 }

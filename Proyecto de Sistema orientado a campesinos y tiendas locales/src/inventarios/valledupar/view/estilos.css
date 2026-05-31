@@ -146,3 +146,16 @@
     -fx-background-color: #f5f9f5;
     -fx-padding: 15;
 }
+
+/* Boton secundario (activar) */
+.btn-secundario {
+    -fx-background-color: #1565c0;
+    -fx-text-fill: white;
+    -fx-background-radius: 5;
+    -fx-cursor: hand;
+    -fx-padding: 6 14 6 14;
+}
+
+.btn-secundario:hover {
+    -fx-background-color: #1e88e5;
+}

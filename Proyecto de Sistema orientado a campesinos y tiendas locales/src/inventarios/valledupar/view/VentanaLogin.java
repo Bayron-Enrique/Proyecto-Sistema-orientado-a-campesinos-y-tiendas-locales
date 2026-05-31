@@ -7,9 +7,9 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
 public class VentanaLogin extends Application {
@@ -20,25 +20,37 @@ public class VentanaLogin extends Application {
     public void start(Stage stage) {
         usuarioService = new UsuarioService();
 
-        // Titulo
-        Label lblTitulo = new Label("Sistema de Gestión de Inventarios");
-        lblTitulo.setFont(Font.font("Arial", FontWeight.BOLD, 16));
+        // Logo
+        ImageView logo = new ImageView(
+            new Image(getClass().getResourceAsStream("logo.png"))
+        );
+        logo.setFitWidth(80);
+        logo.setFitHeight(80);
+        logo.setPreserveRatio(true);
 
-        // Correo
+        Label lblTitulo = new Label("Sistema de Gestión de Inventarios");
+        lblTitulo.getStyleClass().add("label-titulo");
+
+        Label lblSubtitulo = new Label("Valledupar - Cesar");
+        lblSubtitulo.setStyle("-fx-text-fill: #558b2f; -fx-font-size: 12px;");
+
+        VBox cabecera = new VBox(8, logo, lblTitulo, lblSubtitulo);
+        cabecera.setAlignment(Pos.CENTER);
+
         Label lblCorreo = new Label("Correo:");
         TextField txtCorreo = new TextField();
+        txtCorreo.setPromptText("ejemplo@correo.com");
         txtCorreo.setPrefWidth(220);
 
-        // Contraseña
         Label lblContrasena = new Label("Contraseña:");
         PasswordField txtContrasena = new PasswordField();
+        txtContrasena.setPromptText("••••••••");
         txtContrasena.setPrefWidth(220);
 
-        // Boton
         Button btnIngresar = new Button("Ingresar");
-        btnIngresar.setPrefWidth(150);
+        btnIngresar.setPrefWidth(200);
+        btnIngresar.setPrefHeight(38);
 
-        // Layout del formulario
         GridPane grid = new GridPane();
         grid.setHgap(10);
         grid.setVgap(12);
@@ -48,13 +60,20 @@ public class VentanaLogin extends Application {
         grid.add(lblContrasena, 0, 1);
         grid.add(txtContrasena, 1, 1);
 
-        // Layout principal
-        VBox root = new VBox(20);
-        root.setAlignment(Pos.CENTER);
-        root.setPadding(new Insets(30));
-        root.getChildren().addAll(lblTitulo, grid, btnIngresar);
+        VBox tarjeta = new VBox(18);
+        tarjeta.setAlignment(Pos.CENTER);
+        tarjeta.setPadding(new Insets(35, 40, 35, 40));
+        tarjeta.setMaxWidth(420);
+        tarjeta.setStyle(
+            "-fx-background-color: white;" +
+            "-fx-background-radius: 10;" +
+            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 12, 0, 0, 4);"
+        );
+        tarjeta.getChildren().addAll(cabecera, grid, btnIngresar);
 
-        // Accion del boton
+        StackPane root = new StackPane(tarjeta);
+        root.setStyle("-fx-background-color: #e8f5e9;");
+
         btnIngresar.setOnAction(e -> {
             String correo = txtCorreo.getText().trim();
             String contrasena = txtContrasena.getText().trim();
@@ -67,9 +86,13 @@ public class VentanaLogin extends Application {
 
             Usuario usuario = usuarioService.autenticar(correo, contrasena);
             if (usuario != null) {
-                mostrarAlerta(Alert.AlertType.INFORMATION, "Bienvenido",
-                        "Bienvenido, " + usuario.getNombre());
-                new VentanaPrincipal(usuario).start(new Stage());
+                VentanaPrincipal ventana = new VentanaPrincipal(usuario);
+                Stage nuevaVentana = new Stage();
+                try {
+                    ventana.start(nuevaVentana);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
                 stage.close();
             } else {
                 mostrarAlerta(Alert.AlertType.ERROR, "Error",
@@ -77,7 +100,10 @@ public class VentanaLogin extends Application {
             }
         });
 
-        Scene scene = new Scene(root, 420, 280);
+        txtContrasena.setOnAction(e -> btnIngresar.fire());
+
+        Scene scene = new Scene(root, 520, 430);
+        scene.getStylesheets().add(getClass().getResource("estilos.css").toExternalForm());
         stage.setTitle("Sistema de Inventarios - Valledupar");
         stage.setResizable(false);
         stage.setScene(scene);
