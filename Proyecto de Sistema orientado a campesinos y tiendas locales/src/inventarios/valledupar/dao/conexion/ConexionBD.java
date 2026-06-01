@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public class ConexionBD {
 
     private static final String URL = "jdbc:oracle:thin:@localhost:1521:xe";
-    private static final String USUARIO = "system";
+private static final String USUARIO = "inventarios";
 private static final String CONTRASENA = "1234";
 
     private static Connection conexion = null;
