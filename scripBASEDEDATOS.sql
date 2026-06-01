@@ -1,0 +1,633 @@
+--------------------------------------------------------
+-- Archivo creado  - domingo-mayo-31-2026   
+--------------------------------------------------------
+--------------------------------------------------------
+--  DDL for Sequence SEQ_ALERTAS
+--------------------------------------------------------
+
+   CREATE SEQUENCE  "INVENTARIOS"."SEQ_ALERTAS"  MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 1 NOCACHE  NOORDER  NOCYCLE  NOKEEP  NOSCALE  GLOBAL ;
+--------------------------------------------------------
+--  DDL for Sequence SEQ_CATEGORIAS
+--------------------------------------------------------
+
+   CREATE SEQUENCE  "INVENTARIOS"."SEQ_CATEGORIAS"  MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 1 NOCACHE  NOORDER  NOCYCLE  NOKEEP  NOSCALE  GLOBAL ;
+--------------------------------------------------------
+--  DDL for Sequence SEQ_MOVIMIENTOS
+--------------------------------------------------------
+
+   CREATE SEQUENCE  "INVENTARIOS"."SEQ_MOVIMIENTOS"  MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 1 NOCACHE  NOORDER  NOCYCLE  NOKEEP  NOSCALE  GLOBAL ;
+--------------------------------------------------------
+--  DDL for Sequence SEQ_PRODUCTOS
+--------------------------------------------------------
+
+   CREATE SEQUENCE  "INVENTARIOS"."SEQ_PRODUCTOS"  MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 1 NOCACHE  NOORDER  NOCYCLE  NOKEEP  NOSCALE  GLOBAL ;
+--------------------------------------------------------
+--  DDL for Sequence SEQ_PROVEEDORES
+--------------------------------------------------------
+
+   CREATE SEQUENCE  "INVENTARIOS"."SEQ_PROVEEDORES"  MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 1 NOCACHE  NOORDER  NOCYCLE  NOKEEP  NOSCALE  GLOBAL ;
+--------------------------------------------------------
+--  DDL for Sequence SEQ_REPORTES
+--------------------------------------------------------
+
+   CREATE SEQUENCE  "INVENTARIOS"."SEQ_REPORTES"  MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 1 NOCACHE  NOORDER  NOCYCLE  NOKEEP  NOSCALE  GLOBAL ;
+--------------------------------------------------------
+--  DDL for Sequence SEQ_USUARIOS
+--------------------------------------------------------
+
+   CREATE SEQUENCE  "INVENTARIOS"."SEQ_USUARIOS"  MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 1 NOCACHE  NOORDER  NOCYCLE  NOKEEP  NOSCALE  GLOBAL ;
+--------------------------------------------------------
+--  DDL for Table ALERTAS
+----------------------------------------------------------
+--CREAR USUARIO
+CREATE USER INVENTARIOS
+IDENTIFIED BY 1234
+DEFAULT TABLESPACE USERS
+TEMPORARY TABLESPACE TEMP
+QUOTA UNLIMITED ON USERS;
+
+GRANT CONNECT, RESOURCE TO INVENTARIOS;
+GRANT CREATE TABLE TO INVENTARIOS;
+GRANT CREATE SEQUENCE TO INVENTARIOS;
+GRANT CREATE TRIGGER TO INVENTARIOS;
+GRANT CREATE PROCEDURE TO INVENTARIOS;
+GRANT CREATE VIEW TO INVENTARIOS;
+
+  CREATE TABLE "INVENTARIOS"."ALERTAS" 
+   (	"ID_ALERTA" NUMBER, 
+	"ID_PRODUCTO" NUMBER, 
+	"FECHA_ALERTA" DATE, 
+	"STOCK_AL_MOMENTO" NUMBER, 
+	"ESTADO_ALERTA" VARCHAR2(15 BYTE), 
+	"ATENDIDA_POR" NUMBER, 
+	"FECHA_ATENCION" DATE, 
+	"ACTIVO" NUMBER(1,0) DEFAULT 1, 
+	"FECHA_CREACION" DATE DEFAULT SYSDATE
+   ) SEGMENT CREATION DEFERRED 
+  PCTFREE 10 PCTUSED 40 INITRANS 1 MAXTRANS 255 
+ NOCOMPRESS LOGGING
+  TABLESPACE "USERS" ;
+--------------------------------------------------------
+--  DDL for Table CATEGORIAS
+--------------------------------------------------------
+
+  CREATE TABLE "INVENTARIOS"."CATEGORIAS" 
+   (	"ID_CATEGORIA" NUMBER, 
+	"NOMBRE_CATEGORIA" VARCHAR2(40 BYTE), 
+	"DESCRIPCION" VARCHAR2(100 BYTE)
+   ) SEGMENT CREATION DEFERRED 
+  PCTFREE 10 PCTUSED 40 INITRANS 1 MAXTRANS 255 
+ NOCOMPRESS LOGGING
+  TABLESPACE "USERS" ;
+--------------------------------------------------------
+--  DDL for Table MOVIMIENTOS
+--------------------------------------------------------
+
+  CREATE TABLE "INVENTARIOS"."MOVIMIENTOS" 
+   (	"ID_MOVIMIENTO" NUMBER, 
+	"ID_PRODUCTO" NUMBER, 
+	"ID_USUARIO" NUMBER, 
+	"TIPO_MOVIMIENTO" VARCHAR2(10 BYTE), 
+	"CANTIDAD" NUMBER, 
+	"FECHA_MOVIMIENTO" DATE, 
+	"OBSERVACION" VARCHAR2(150 BYTE), 
+	"STOCK_RESULTANTE" NUMBER, 
+	"ACTIVO" NUMBER(1,0) DEFAULT 1, 
+	"FECHA_CREACION" DATE DEFAULT SYSDATE
+   ) SEGMENT CREATION DEFERRED 
+  PCTFREE 10 PCTUSED 40 INITRANS 1 MAXTRANS 255 
+ NOCOMPRESS LOGGING
+  TABLESPACE "USERS" ;
+--------------------------------------------------------
+--  DDL for Table PRODUCTOS
+--------------------------------------------------------
+
+  CREATE TABLE "INVENTARIOS"."PRODUCTOS" 
+   (	"ID_PRODUCTO" NUMBER, 
+	"NOMBRE_PRODUCTO" VARCHAR2(60 BYTE), 
+	"DESCRIPCION" VARCHAR2(150 BYTE), 
+	"ID_CATEGORIA" NUMBER, 
+	"ID_PROVEEDOR" NUMBER, 
+	"PRECIO_COMPRA" NUMBER(10,2), 
+	"PRECIO_VENTA" NUMBER(10,2), 
+	"STOCK_ACTUAL" NUMBER, 
+	"STOCK_MINIMO" NUMBER, 
+	"UNIDAD_MEDIDA" VARCHAR2(10 BYTE), 
+	"ESTADO" VARCHAR2(10 BYTE), 
+	"FECHA_CREACION" DATE DEFAULT SYSDATE
+   ) SEGMENT CREATION DEFERRED 
+  PCTFREE 10 PCTUSED 40 INITRANS 1 MAXTRANS 255 
+ NOCOMPRESS LOGGING
+  TABLESPACE "USERS" ;
+--------------------------------------------------------
+--  DDL for Table PROVEEDORES
+--------------------------------------------------------
+
+  CREATE TABLE "INVENTARIOS"."PROVEEDORES" 
+   (	"ID_PROVEEDOR" NUMBER, 
+	"NOMBRE_PROVEEDOR" VARCHAR2(60 BYTE), 
+	"TELEFONO" VARCHAR2(10 BYTE), 
+	"CORREO" VARCHAR2(80 BYTE), 
+	"DIRECCION" VARCHAR2(120 BYTE), 
+	"ESTADO" VARCHAR2(10 BYTE)
+   ) SEGMENT CREATION DEFERRED 
+  PCTFREE 10 PCTUSED 40 INITRANS 1 MAXTRANS 255 
+ NOCOMPRESS LOGGING
+  TABLESPACE "USERS" ;
+--------------------------------------------------------
+--  DDL for Table REPORTES
+--------------------------------------------------------
+
+  CREATE TABLE "INVENTARIOS"."REPORTES" 
+   (	"ID_REPORTE" NUMBER, 
+	"ID_USUARIO" NUMBER, 
+	"TIPO_REPORTE" VARCHAR2(30 BYTE), 
+	"FECHA_GENERACION" DATE, 
+	"PERIODO_INICIO" DATE, 
+	"PERIODO_FIN" DATE, 
+	"DESCRIPCION" VARCHAR2(200 BYTE), 
+	"ACTIVO" NUMBER(1,0) DEFAULT 1, 
+	"FECHA_CREACION" DATE DEFAULT SYSDATE
+   ) SEGMENT CREATION DEFERRED 
+  PCTFREE 10 PCTUSED 40 INITRANS 1 MAXTRANS 255 
+ NOCOMPRESS LOGGING
+  TABLESPACE "USERS" ;
+--------------------------------------------------------
+--  DDL for Table USUARIOS
+--------------------------------------------------------
+
+  CREATE TABLE "INVENTARIOS"."USUARIOS" 
+   (	"ID_USUARIO" NUMBER, 
+	"NOMBRE_USUARIO" VARCHAR2(50 BYTE), 
+	"CORREO" VARCHAR2(80 BYTE), 
+	"CONTRASENA" VARCHAR2(255 BYTE), 
+	"ROL" VARCHAR2(20 BYTE), 
+	"TELEFONO" VARCHAR2(10 BYTE), 
+	"ESTADO" VARCHAR2(10 BYTE), 
+	"FECHA_REGISTRO" DATE DEFAULT SYSDATE
+   ) SEGMENT CREATION DEFERRED 
+  PCTFREE 10 PCTUSED 40 INITRANS 1 MAXTRANS 255 
+ NOCOMPRESS LOGGING
+  TABLESPACE "USERS" ;
+REM INSERTING into INVENTARIOS.ALERTAS
+SET DEFINE OFF;
+REM INSERTING into INVENTARIOS.CATEGORIAS
+SET DEFINE OFF;
+REM INSERTING into INVENTARIOS.MOVIMIENTOS
+SET DEFINE OFF;
+REM INSERTING into INVENTARIOS.PRODUCTOS
+SET DEFINE OFF;
+REM INSERTING into INVENTARIOS.PROVEEDORES
+SET DEFINE OFF;
+REM INSERTING into INVENTARIOS.REPORTES
+SET DEFINE OFF;
+REM INSERTING into INVENTARIOS.USUARIOS
+SET DEFINE OFF;
+--------------------------------------------------------
+--  DDL for Trigger TRG_FECHA_MOVIMIENTO
+--------------------------------------------------------
+
+  CREATE OR REPLACE NONEDITIONABLE TRIGGER "INVENTARIOS"."TRG_FECHA_MOVIMIENTO" 
+BEFORE INSERT ON MOVIMIENTOS
+FOR EACH ROW
+BEGIN
+
+    IF :NEW.FECHA_MOVIMIENTO IS NULL THEN
+        :NEW.FECHA_MOVIMIENTO := SYSDATE;
+    END IF;
+
+END;
+
+/
+ALTER TRIGGER "INVENTARIOS"."TRG_FECHA_MOVIMIENTO" ENABLE;
+--------------------------------------------------------
+--  DDL for Trigger TRG_GENERAR_ALERTA
+--------------------------------------------------------
+
+  CREATE OR REPLACE NONEDITIONABLE TRIGGER "INVENTARIOS"."TRG_GENERAR_ALERTA" 
+AFTER UPDATE OF STOCK_ACTUAL ON PRODUCTOS
+FOR EACH ROW
+DECLARE
+    V_EXISTE NUMBER;
+BEGIN
+
+    IF :NEW.STOCK_ACTUAL <= :NEW.STOCK_MINIMO
+       AND :NEW.ESTADO = 'activo' THEN
+
+        SELECT COUNT(*)
+        INTO V_EXISTE
+        FROM ALERTAS
+        WHERE ID_PRODUCTO = :NEW.ID_PRODUCTO
+          AND ESTADO_ALERTA = 'pendiente';
+
+        IF V_EXISTE = 0 THEN
+
+            INSERT INTO ALERTAS(
+                ID_ALERTA,
+                ID_PRODUCTO,
+                FECHA_ALERTA,
+                STOCK_AL_MOMENTO,
+                ESTADO_ALERTA,
+                ACTIVO,
+                FECHA_CREACION
+            )
+            VALUES(
+                SEQ_ALERTAS.NEXTVAL,
+                :NEW.ID_PRODUCTO,
+                SYSDATE,
+                :NEW.STOCK_ACTUAL,
+                'pendiente',
+                1,
+                SYSDATE
+            );
+
+        END IF;
+
+    END IF;
+
+END;
+
+/
+ALTER TRIGGER "INVENTARIOS"."TRG_GENERAR_ALERTA" ENABLE;
+--------------------------------------------------------
+--  DDL for Trigger TRG_PROTEGER_PRODUCTO_ACTIVO
+--------------------------------------------------------
+
+  CREATE OR REPLACE NONEDITIONABLE TRIGGER "INVENTARIOS"."TRG_PROTEGER_PRODUCTO_ACTIVO" 
+BEFORE DELETE ON PRODUCTOS
+FOR EACH ROW
+BEGIN
+
+    IF :OLD.ESTADO = 'activo' THEN
+
+        RAISE_APPLICATION_ERROR(
+            -20030,
+            'No se puede eliminar "' ||
+            :OLD.NOMBRE_PRODUCTO ||
+            '" porque esta activo.'
+        );
+
+    END IF;
+
+END;
+
+/
+ALTER TRIGGER "INVENTARIOS"."TRG_PROTEGER_PRODUCTO_ACTIVO" ENABLE;
+--------------------------------------------------------
+--  DDL for Trigger TRG_VALIDAR_SALIDA
+--------------------------------------------------------
+
+  CREATE OR REPLACE NONEDITIONABLE TRIGGER "INVENTARIOS"."TRG_VALIDAR_SALIDA" 
+BEFORE INSERT ON MOVIMIENTOS
+FOR EACH ROW
+DECLARE
+    v_stock_actual PRODUCTOS.STOCK_ACTUAL%TYPE;
+    v_nombre PRODUCTOS.NOMBRE_PRODUCTO%TYPE;
+BEGIN
+
+    IF :NEW.TIPO_MOVIMIENTO = 'salida' THEN
+
+        SELECT STOCK_ACTUAL,
+               NOMBRE_PRODUCTO
+        INTO v_stock_actual,
+             v_nombre
+        FROM PRODUCTOS
+        WHERE ID_PRODUCTO = :NEW.ID_PRODUCTO;
+
+        IF v_stock_actual < :NEW.CANTIDAD THEN
+            RAISE_APPLICATION_ERROR(
+                -20020,
+                'Stock insuficiente para "' || v_nombre ||
+                '". Disponible: ' || v_stock_actual ||
+                ', Solicitado: ' || :NEW.CANTIDAD
+            );
+        END IF;
+
+    END IF;
+
+END;
+
+/
+ALTER TRIGGER "INVENTARIOS"."TRG_VALIDAR_SALIDA" ENABLE;
+--------------------------------------------------------
+--  DDL for Trigger TRG_VALIDAR_SALIDA
+--------------------------------------------------------
+
+  CREATE OR REPLACE NONEDITIONABLE TRIGGER "INVENTARIOS"."TRG_VALIDAR_SALIDA" 
+BEFORE INSERT ON MOVIMIENTOS
+FOR EACH ROW
+DECLARE
+    v_stock_actual PRODUCTOS.STOCK_ACTUAL%TYPE;
+    v_nombre PRODUCTOS.NOMBRE_PRODUCTO%TYPE;
+BEGIN
+
+    IF :NEW.TIPO_MOVIMIENTO = 'salida' THEN
+
+        SELECT STOCK_ACTUAL,
+               NOMBRE_PRODUCTO
+        INTO v_stock_actual,
+             v_nombre
+        FROM PRODUCTOS
+        WHERE ID_PRODUCTO = :NEW.ID_PRODUCTO;
+
+        IF v_stock_actual < :NEW.CANTIDAD THEN
+            RAISE_APPLICATION_ERROR(
+                -20020,
+                'Stock insuficiente para "' || v_nombre ||
+                '". Disponible: ' || v_stock_actual ||
+                ', Solicitado: ' || :NEW.CANTIDAD
+            );
+        END IF;
+
+    END IF;
+
+END;
+
+/
+ALTER TRIGGER "INVENTARIOS"."TRG_VALIDAR_SALIDA" ENABLE;
+--------------------------------------------------------
+--  DDL for Trigger TRG_FECHA_MOVIMIENTO
+--------------------------------------------------------
+
+  CREATE OR REPLACE NONEDITIONABLE TRIGGER "INVENTARIOS"."TRG_FECHA_MOVIMIENTO" 
+BEFORE INSERT ON MOVIMIENTOS
+FOR EACH ROW
+BEGIN
+
+    IF :NEW.FECHA_MOVIMIENTO IS NULL THEN
+        :NEW.FECHA_MOVIMIENTO := SYSDATE;
+    END IF;
+
+END;
+
+/
+ALTER TRIGGER "INVENTARIOS"."TRG_FECHA_MOVIMIENTO" ENABLE;
+--------------------------------------------------------
+--  DDL for Trigger TRG_GENERAR_ALERTA
+--------------------------------------------------------
+
+  CREATE OR REPLACE NONEDITIONABLE TRIGGER "INVENTARIOS"."TRG_GENERAR_ALERTA" 
+AFTER UPDATE OF STOCK_ACTUAL ON PRODUCTOS
+FOR EACH ROW
+DECLARE
+    V_EXISTE NUMBER;
+BEGIN
+
+    IF :NEW.STOCK_ACTUAL <= :NEW.STOCK_MINIMO
+       AND :NEW.ESTADO = 'activo' THEN
+
+        SELECT COUNT(*)
+        INTO V_EXISTE
+        FROM ALERTAS
+        WHERE ID_PRODUCTO = :NEW.ID_PRODUCTO
+          AND ESTADO_ALERTA = 'pendiente';
+
+        IF V_EXISTE = 0 THEN
+
+            INSERT INTO ALERTAS(
+                ID_ALERTA,
+                ID_PRODUCTO,
+                FECHA_ALERTA,
+                STOCK_AL_MOMENTO,
+                ESTADO_ALERTA,
+                ACTIVO,
+                FECHA_CREACION
+            )
+            VALUES(
+                SEQ_ALERTAS.NEXTVAL,
+                :NEW.ID_PRODUCTO,
+                SYSDATE,
+                :NEW.STOCK_ACTUAL,
+                'pendiente',
+                1,
+                SYSDATE
+            );
+
+        END IF;
+
+    END IF;
+
+END;
+
+/
+ALTER TRIGGER "INVENTARIOS"."TRG_GENERAR_ALERTA" ENABLE;
+--------------------------------------------------------
+--  DDL for Trigger TRG_PROTEGER_PRODUCTO_ACTIVO
+--------------------------------------------------------
+
+  CREATE OR REPLACE NONEDITIONABLE TRIGGER "INVENTARIOS"."TRG_PROTEGER_PRODUCTO_ACTIVO" 
+BEFORE DELETE ON PRODUCTOS
+FOR EACH ROW
+BEGIN
+
+    IF :OLD.ESTADO = 'activo' THEN
+
+        RAISE_APPLICATION_ERROR(
+            -20030,
+            'No se puede eliminar "' ||
+            :OLD.NOMBRE_PRODUCTO ||
+            '" porque esta activo.'
+        );
+
+    END IF;
+
+END;
+
+/
+ALTER TRIGGER "INVENTARIOS"."TRG_PROTEGER_PRODUCTO_ACTIVO" ENABLE;
+--------------------------------------------------------
+--  DDL for Procedure SP_ATENDER_ALERTA
+--------------------------------------------------------
+set define off;
+
+  CREATE OR REPLACE NONEDITIONABLE PROCEDURE "INVENTARIOS"."SP_ATENDER_ALERTA" (
+    p_id_alerta IN NUMBER,
+    p_id_usuario IN NUMBER
+)
+IS
+BEGIN
+
+    UPDATE ALERTAS
+    SET ESTADO_ALERTA = 'atendida',
+        ATENDIDA_POR = p_id_usuario,
+        FECHA_ATENCION = SYSDATE
+    WHERE ID_ALERTA = p_id_alerta;
+
+    COMMIT;
+
+END;
+
+/
+--------------------------------------------------------
+--  DDL for Procedure SP_DESACTIVAR_PRODUCTO
+--------------------------------------------------------
+set define off;
+
+  CREATE OR REPLACE NONEDITIONABLE PROCEDURE "INVENTARIOS"."SP_DESACTIVAR_PRODUCTO" (
+    p_id_producto IN NUMBER
+)
+IS
+BEGIN
+
+    UPDATE PRODUCTOS
+    SET ESTADO = 'inactivo'
+    WHERE ID_PRODUCTO = p_id_producto;
+
+    COMMIT;
+
+END;
+
+/
+--------------------------------------------------------
+--  DDL for Package PKG_INVENTARIO
+--------------------------------------------------------
+
+  CREATE OR REPLACE NONEDITIONABLE PACKAGE "INVENTARIOS"."PKG_INVENTARIO" AS
+
+    PROCEDURE PRC_REGISTRAR_MOVIMIENTO(
+        p_id_producto IN NUMBER,
+        p_id_usuario  IN NUMBER,
+        p_tipo        IN VARCHAR2,
+        p_cantidad    IN NUMBER,
+        p_observacion IN VARCHAR2
+    );
+
+    PROCEDURE PRC_ATENDER_ALERTA(
+        p_id_alerta NUMBER
+    );
+
+    PROCEDURE PRC_DESACTIVAR_PRODUCTO(
+        p_id_producto NUMBER
+    );
+
+    FUNCTION FN_STOCK_ACTUAL(
+        p_id_producto NUMBER
+    ) RETURN NUMBER;
+
+    FUNCTION FN_ESTADO_STOCK(
+        p_id_producto NUMBER
+    ) RETURN VARCHAR2;
+
+    FUNCTION FN_TOTAL_MOVIMIENTOS(
+        p_id_producto NUMBER
+    ) RETURN NUMBER;
+
+END PKG_INVENTARIO;
+
+/
+--------------------------------------------------------
+--  Constraints for Table ALERTAS
+--------------------------------------------------------
+
+  ALTER TABLE "INVENTARIOS"."ALERTAS" MODIFY ("STOCK_AL_MOMENTO" NOT NULL ENABLE);
+  ALTER TABLE "INVENTARIOS"."ALERTAS" MODIFY ("ESTADO_ALERTA" NOT NULL ENABLE);
+  ALTER TABLE "INVENTARIOS"."ALERTAS" ADD PRIMARY KEY ("ID_ALERTA")
+  USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  TABLESPACE "USERS"  ENABLE;
+  ALTER TABLE "INVENTARIOS"."ALERTAS" ADD CONSTRAINT "CHK_ALERTA_ESTADO" CHECK (ESTADO_ALERTA IN ('pendiente','atendida')) ENABLE;
+--------------------------------------------------------
+--  Constraints for Table CATEGORIAS
+--------------------------------------------------------
+
+  ALTER TABLE "INVENTARIOS"."CATEGORIAS" MODIFY ("NOMBRE_CATEGORIA" NOT NULL ENABLE);
+  ALTER TABLE "INVENTARIOS"."CATEGORIAS" ADD PRIMARY KEY ("ID_CATEGORIA")
+  USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  TABLESPACE "USERS"  ENABLE;
+--------------------------------------------------------
+--  Constraints for Table MOVIMIENTOS
+--------------------------------------------------------
+
+  ALTER TABLE "INVENTARIOS"."MOVIMIENTOS" MODIFY ("TIPO_MOVIMIENTO" NOT NULL ENABLE);
+  ALTER TABLE "INVENTARIOS"."MOVIMIENTOS" MODIFY ("CANTIDAD" NOT NULL ENABLE);
+  ALTER TABLE "INVENTARIOS"."MOVIMIENTOS" MODIFY ("STOCK_RESULTANTE" NOT NULL ENABLE);
+  ALTER TABLE "INVENTARIOS"."MOVIMIENTOS" ADD PRIMARY KEY ("ID_MOVIMIENTO")
+  USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  TABLESPACE "USERS"  ENABLE;
+  ALTER TABLE "INVENTARIOS"."MOVIMIENTOS" ADD CONSTRAINT "CHK_TIPO_MOVIMIENTO" CHECK (TIPO_MOVIMIENTO IN ('entrada','salida','ajuste')) ENABLE;
+  ALTER TABLE "INVENTARIOS"."MOVIMIENTOS" ADD CONSTRAINT "CHK_CANTIDAD" CHECK (CANTIDAD > 0) ENABLE;
+--------------------------------------------------------
+--  Constraints for Table PRODUCTOS
+--------------------------------------------------------
+
+  ALTER TABLE "INVENTARIOS"."PRODUCTOS" MODIFY ("NOMBRE_PRODUCTO" NOT NULL ENABLE);
+  ALTER TABLE "INVENTARIOS"."PRODUCTOS" MODIFY ("PRECIO_COMPRA" NOT NULL ENABLE);
+  ALTER TABLE "INVENTARIOS"."PRODUCTOS" MODIFY ("PRECIO_VENTA" NOT NULL ENABLE);
+  ALTER TABLE "INVENTARIOS"."PRODUCTOS" MODIFY ("STOCK_ACTUAL" NOT NULL ENABLE);
+  ALTER TABLE "INVENTARIOS"."PRODUCTOS" MODIFY ("STOCK_MINIMO" NOT NULL ENABLE);
+  ALTER TABLE "INVENTARIOS"."PRODUCTOS" MODIFY ("ESTADO" NOT NULL ENABLE);
+  ALTER TABLE "INVENTARIOS"."PRODUCTOS" ADD PRIMARY KEY ("ID_PRODUCTO")
+  USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  TABLESPACE "USERS"  ENABLE;
+  ALTER TABLE "INVENTARIOS"."PRODUCTOS" ADD CONSTRAINT "CHK_PRODUCTO_ESTADO" CHECK (ESTADO IN ('activo','inactivo')) ENABLE;
+  ALTER TABLE "INVENTARIOS"."PRODUCTOS" ADD CONSTRAINT "CHK_STOCK_ACTUAL" CHECK (STOCK_ACTUAL >= 0) ENABLE;
+  ALTER TABLE "INVENTARIOS"."PRODUCTOS" ADD CONSTRAINT "CHK_STOCK_MINIMO" CHECK (STOCK_MINIMO >= 0) ENABLE;
+  ALTER TABLE "INVENTARIOS"."PRODUCTOS" ADD CONSTRAINT "CHK_PRECIO_COMPRA" CHECK (PRECIO_COMPRA > 0) ENABLE;
+  ALTER TABLE "INVENTARIOS"."PRODUCTOS" ADD CONSTRAINT "CHK_PRECIO_VENTA" CHECK (PRECIO_VENTA > 0) ENABLE;
+--------------------------------------------------------
+--  Constraints for Table PROVEEDORES
+--------------------------------------------------------
+
+  ALTER TABLE "INVENTARIOS"."PROVEEDORES" MODIFY ("NOMBRE_PROVEEDOR" NOT NULL ENABLE);
+  ALTER TABLE "INVENTARIOS"."PROVEEDORES" MODIFY ("ESTADO" NOT NULL ENABLE);
+  ALTER TABLE "INVENTARIOS"."PROVEEDORES" ADD PRIMARY KEY ("ID_PROVEEDOR")
+  USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  TABLESPACE "USERS"  ENABLE;
+  ALTER TABLE "INVENTARIOS"."PROVEEDORES" ADD CONSTRAINT "CHK_PROVEEDOR_ESTADO" CHECK (ESTADO IN ('activo','inactivo')) ENABLE;
+  ALTER TABLE "INVENTARIOS"."PROVEEDORES" ADD CONSTRAINT "CHK_PROVEEDORES_TELEFONO" CHECK (
+    TELEFONO IS NULL
+    OR LENGTH(TELEFONO) = 10
+) ENABLE;
+--------------------------------------------------------
+--  Constraints for Table REPORTES
+--------------------------------------------------------
+
+  ALTER TABLE "INVENTARIOS"."REPORTES" ADD PRIMARY KEY ("ID_REPORTE")
+  USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  TABLESPACE "USERS"  ENABLE;
+--------------------------------------------------------
+--  Constraints for Table USUARIOS
+--------------------------------------------------------
+
+  ALTER TABLE "INVENTARIOS"."USUARIOS" MODIFY ("NOMBRE_USUARIO" NOT NULL ENABLE);
+  ALTER TABLE "INVENTARIOS"."USUARIOS" MODIFY ("CORREO" NOT NULL ENABLE);
+  ALTER TABLE "INVENTARIOS"."USUARIOS" MODIFY ("CONTRASENA" NOT NULL ENABLE);
+  ALTER TABLE "INVENTARIOS"."USUARIOS" MODIFY ("ROL" NOT NULL ENABLE);
+  ALTER TABLE "INVENTARIOS"."USUARIOS" MODIFY ("ESTADO" NOT NULL ENABLE);
+  ALTER TABLE "INVENTARIOS"."USUARIOS" ADD PRIMARY KEY ("ID_USUARIO")
+  USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  TABLESPACE "USERS"  ENABLE;
+  ALTER TABLE "INVENTARIOS"."USUARIOS" ADD UNIQUE ("CORREO")
+  USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  TABLESPACE "USERS"  ENABLE;
+  ALTER TABLE "INVENTARIOS"."USUARIOS" ADD CONSTRAINT "CHK_USUARIO_ESTADO" CHECK (ESTADO IN ('activo','inactivo')) ENABLE;
+  ALTER TABLE "INVENTARIOS"."USUARIOS" ADD CONSTRAINT "CHK_USUARIOS_TELEFONO" CHECK (LENGTH(TELEFONO) = 10) ENABLE;
+--------------------------------------------------------
+--  Ref Constraints for Table ALERTAS
+--------------------------------------------------------
+
+  ALTER TABLE "INVENTARIOS"."ALERTAS" ADD FOREIGN KEY ("ID_PRODUCTO")
+	  REFERENCES "INVENTARIOS"."PRODUCTOS" ("ID_PRODUCTO") ENABLE;
+  ALTER TABLE "INVENTARIOS"."ALERTAS" ADD FOREIGN KEY ("ATENDIDA_POR")
+	  REFERENCES "INVENTARIOS"."USUARIOS" ("ID_USUARIO") ENABLE;
+--------------------------------------------------------
+--  Ref Constraints for Table MOVIMIENTOS
+--------------------------------------------------------
+
+  ALTER TABLE "INVENTARIOS"."MOVIMIENTOS" ADD FOREIGN KEY ("ID_PRODUCTO")
+	  REFERENCES "INVENTARIOS"."PRODUCTOS" ("ID_PRODUCTO") ENABLE;
+  ALTER TABLE "INVENTARIOS"."MOVIMIENTOS" ADD FOREIGN KEY ("ID_USUARIO")
+	  REFERENCES "INVENTARIOS"."USUARIOS" ("ID_USUARIO") ENABLE;
+--------------------------------------------------------
+--  Ref Constraints for Table PRODUCTOS
+--------------------------------------------------------
+
+  ALTER TABLE "INVENTARIOS"."PRODUCTOS" ADD FOREIGN KEY ("ID_CATEGORIA")
+	  REFERENCES "INVENTARIOS"."CATEGORIAS" ("ID_CATEGORIA") ENABLE;
+  ALTER TABLE "INVENTARIOS"."PRODUCTOS" ADD FOREIGN KEY ("ID_PROVEEDOR")
+	  REFERENCES "INVENTARIOS"."PROVEEDORES" ("ID_PROVEEDOR") ENABLE;
+--------------------------------------------------------
+--  Ref Constraints for Table REPORTES
+--------------------------------------------------------
+
+  ALTER TABLE "INVENTARIOS"."REPORTES" ADD FOREIGN KEY ("ID_USUARIO")
+	  REFERENCES "INVENTARIOS"."USUARIOS" ("ID_USUARIO") ENABLE;
