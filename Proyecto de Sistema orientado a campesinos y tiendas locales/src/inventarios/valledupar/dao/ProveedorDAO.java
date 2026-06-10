@@ -16,7 +16,9 @@ public class ProveedorDAO implements IProveedorDAO {
 
     @Override
     public void guardar(Proveedor proveedor) {
-        String sql = "INSERT INTO proveedores VALUES (seq_proveedores.NEXTVAL, ?, ?, ?, ?, ?)";
+        // Sin NEXTVAL: IDENTITY. Columnas explícitas con nombre correcto
+        String sql = "INSERT INTO proveedores (nombre_proveedor, telefono, correo, direccion, estado) "
+                   + "VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, proveedor.getNombre());
             ps.setString(2, proveedor.getTelefono());
@@ -35,9 +37,7 @@ public class ProveedorDAO implements IProveedorDAO {
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, idProveedor);
             ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return mapearProveedor(rs);
-            }
+            if (rs.next()) return mapearProveedor(rs);
         } catch (SQLException e) {
             System.out.println("Error al buscar proveedor: " + e.getMessage());
         }
@@ -47,12 +47,10 @@ public class ProveedorDAO implements IProveedorDAO {
     @Override
     public List<Proveedor> buscarTodos() {
         List<Proveedor> lista = new ArrayList<>();
-        String sql = "SELECT * FROM proveedores";
+        String sql = "SELECT * FROM proveedores ORDER BY id_proveedor";
         try (Statement st = conn.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
-            while (rs.next()) {
-                lista.add(mapearProveedor(rs));
-            }
+            while (rs.next()) lista.add(mapearProveedor(rs));
         } catch (SQLException e) {
             System.out.println("Error al listar proveedores: " + e.getMessage());
         }
@@ -61,7 +59,7 @@ public class ProveedorDAO implements IProveedorDAO {
 
     @Override
     public void actualizar(Proveedor proveedor) {
-        String sql = "UPDATE proveedores SET nombre=?, telefono=?, correo=?, direccion=?, estado=? WHERE id_proveedor=?";
+        String sql = "UPDATE proveedores SET nombre_proveedor=?, telefono=?, correo=?, direccion=?, estado=? WHERE id_proveedor=?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, proveedor.getNombre());
             ps.setString(2, proveedor.getTelefono());
@@ -89,7 +87,7 @@ public class ProveedorDAO implements IProveedorDAO {
     private Proveedor mapearProveedor(ResultSet rs) throws SQLException {
         return new Proveedor(
             rs.getInt("id_proveedor"),
-            rs.getString("nombre"),
+            rs.getString("nombre_proveedor"),
             rs.getString("telefono"),
             rs.getString("correo"),
             rs.getString("direccion"),

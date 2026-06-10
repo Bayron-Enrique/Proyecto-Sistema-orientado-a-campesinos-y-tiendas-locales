@@ -49,20 +49,33 @@ public class ProductoDAO implements IProductoDAO {
         return null;
     }
 
-    @Override
-    public List<Producto> buscarTodos() {
-        List<Producto> lista = new ArrayList<>();
-        String sql = "SELECT * FROM productos";
-        try (Statement st = conn.createStatement();
-             ResultSet rs = st.executeQuery(sql)) {
-            while (rs.next()) {
-                lista.add(mapearProducto(rs));
-            }
-        } catch (SQLException e) {
-            System.out.println("Error al listar productos: " + e.getMessage());
+   @Override
+public List<Producto> buscarTodos() {
+    List<Producto> lista = new ArrayList<>();
+    String sql = "SELECT * FROM productos";
+
+    try (Statement st = conn.createStatement();
+         ResultSet rs = st.executeQuery(sql)) {
+
+        while (rs.next()) {
+
+            System.out.println(
+                rs.getInt("id_producto")
+                + " - "
+                + rs.getString("nombre_producto")
+            );
+
+            lista.add(mapearProducto(rs));
         }
-        return lista;
+
+        System.out.println("Productos encontrados: " + lista.size());
+
+    } catch (SQLException e) {
+        System.out.println("Error al listar productos: " + e.getMessage());
     }
+
+    return lista;
+}
 
     @Override
     public List<Producto> buscarPorCategoria(int idCategoria) {
