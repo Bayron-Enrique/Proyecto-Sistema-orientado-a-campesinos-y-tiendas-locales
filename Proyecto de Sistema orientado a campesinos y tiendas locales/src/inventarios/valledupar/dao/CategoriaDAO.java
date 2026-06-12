@@ -82,11 +82,12 @@ public class CategoriaDAO implements ICategoriaDAO {
         }
     }
 
-private Categoria mapearCategoria(ResultSet rs) throws SQLException {
+   private Categoria mapearCategoria(ResultSet rs) throws SQLException {
     return new Categoria(
         rs.getInt("ID_CATEGORIA"),
         rs.getString("NOMBRE_CATEGORIA"),
         rs.getString("DESCRIPCION"),
         "activo"
     );
+}
 }

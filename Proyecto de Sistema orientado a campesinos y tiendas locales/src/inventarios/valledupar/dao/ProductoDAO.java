@@ -15,24 +15,37 @@ public class ProductoDAO implements IProductoDAO {
     }
 
     @Override
-    public void guardar(Producto producto) {
-        String sql = "INSERT INTO productos VALUES (seq_productos.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, producto.getNombreProducto());
-            ps.setString(2, producto.getDescripcion());
-            ps.setInt(3, producto.getIdCategoria());
-            ps.setInt(4, producto.getIdProveedor());
-            ps.setDouble(5, producto.getPrecioCompra());
-            ps.setDouble(6, producto.getPrecioVenta());
-            ps.setInt(7, producto.getStockActual());
-            ps.setInt(8, producto.getStockMinimo());
-            ps.setString(9, producto.getUnidadMedida());
-            ps.setString(10, producto.getEstado());
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            System.out.println("Error al guardar producto: " + e.getMessage());
-        }
+public void guardar(Producto producto) {
+
+    String sql =
+        "INSERT INTO productos (" +
+        "ID_PRODUCTO, NOMBRE_PRODUCTO, DESCRIPCION, ID_CATEGORIA, ID_PROVEEDOR, " +
+        "PRECIO_COMPRA, PRECIO_VENTA, STOCK_ACTUAL, STOCK_MINIMO, " +
+        "UNIDAD_MEDIDA, ESTADO, FECHA_CREACION" +
+        ") VALUES (" +
+        "seq_productos.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, SYSDATE)";
+
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+
+        ps.setString(1, producto.getNombreProducto());
+        ps.setString(2, producto.getDescripcion());
+        ps.setInt(3, producto.getIdCategoria());
+        ps.setInt(4, producto.getIdProveedor());
+        ps.setDouble(5, producto.getPrecioCompra());
+        ps.setDouble(6, producto.getPrecioVenta());
+        ps.setInt(7, producto.getStockActual());
+        ps.setInt(8, producto.getStockMinimo());
+        ps.setString(9, producto.getUnidadMedida());
+        ps.setString(10, producto.getEstado());
+
+        ps.executeUpdate();
+
+        System.out.println("Producto guardado correctamente");
+
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+}
 
     @Override
     public Producto buscarPorId(int idProducto) {
